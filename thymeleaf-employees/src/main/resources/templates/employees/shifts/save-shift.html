@@ -33,13 +33,12 @@
             <input type="text" th:field="*{date}"
                    class="form-control mb-4 w-25" placeholder="Scheduled date">
 
+
             <button type="submit" class="btn btn-info col-2">Save</button>
 
         </form>
-
         <hr>
-        <a th:href="@{/employees/shifts/shifts-list}">Back to Shift List</a>
-
+        <a th:href="@{/employees/shifts-list(employeeId=${shift.employee.id})}">Back to Shift List</a>
     </div>
 
 

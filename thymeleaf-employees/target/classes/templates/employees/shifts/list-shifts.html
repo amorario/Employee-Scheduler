@@ -24,6 +24,7 @@
 			<tr>
 				<th>Call</th>
 				<th>Date</th>
+				<th>Employee</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -34,6 +35,7 @@
 				<td th:text="${tempShift.call}" />
 				<td th:text="${tempShift.date}" />
 
+				<td th:text="${tempShift.employee.id}" />
 				<!-- Add update button/link -->
 				<td>
 					<a th:href="@{/employees/shifts/showFormForShiftUpdate(shiftId=${tempShift.id})}"
@@ -52,6 +54,9 @@
 			</tr>
 		</tbody>		
 	</table>
+
+	<hr>
+	<a th:href="@{/employees/list}">Back to Employees List</a>
 	
 </div>
 	

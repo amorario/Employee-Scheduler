@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
 	private EmployeeService employeeService;
-	private ShiftService shiftService;
 
 
 	public EmployeeController(EmployeeService theEmployeeService) {
@@ -88,6 +87,8 @@ public class EmployeeController {
 
 		// get the employee from the service
 		Employee theEmployee = employeeService.findById(theId);
+
+		System.out.println("In the Employee Controller list");
 
 		// add to the spring model
 		theModel.addAttribute("shifts", theEmployee.getShifts());

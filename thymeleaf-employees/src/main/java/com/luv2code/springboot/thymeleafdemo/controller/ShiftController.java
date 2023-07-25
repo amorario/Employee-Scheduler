@@ -22,9 +22,10 @@ public class ShiftController {
 
 	// add mapping for "/list"
 
-	@GetMapping("/list")
+	@GetMapping("/shifts-list")
 	public String listShifts(@RequestParam("shiftId") int theId, Model theModel) {
 
+		System.out.println("In the Shift Controller method listShifts()");
 		// get the shifts from db
 		List<Shift> theShifts = shiftService.findAll();
 
@@ -67,6 +68,8 @@ public class ShiftController {
 	public String showFormForUpdate(@RequestParam("shiftId") int theId,
 									Model theModel) {
 
+		System.out.println("Inside method for showFormShiftUpdate");
+
 		// get the shift from the service
 		Shift theShift = shiftService.findById(theId);
 
@@ -93,13 +96,16 @@ public class ShiftController {
 		// delete the shift
 		shiftService.deleteById(theId);
 
+		System.out.println("In the Shift Controller");
+
 		// redirect to /shifts/list
-		return "redirect:/employees/shifts/list-shifts";
+		return "redirect:/employees/list";
 
 	}
 	
 	@PostMapping("/saveShift")
 	public String saveShift(@ModelAttribute("shift") Shift theShift) {
+
 
 		// save the shift
 		shiftService.save(theShift);
