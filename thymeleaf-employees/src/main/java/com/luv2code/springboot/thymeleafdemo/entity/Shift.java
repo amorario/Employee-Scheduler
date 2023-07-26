@@ -17,13 +17,13 @@ public class Shift {
       @Column(name="id")
       private int id;
   
-      @Column(name = "call")
+      @Column(name = "scall")
       private String call;
 
       @Column(name = "date")
       private String date;
       
-      @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+      @ManyToOne(cascade = {CascadeType.PERSIST,
                           CascadeType.DETACH, CascadeType.REFRESH})
       @JoinColumn(name="employee_id")
       private Employee employee;
@@ -72,6 +72,7 @@ public class Shift {
                 ", call= " + call +
             //", date= " + output.format(date) +
             ", date= " + date +
+            ", employeeId= " + employee.getId() +
                 '}';
       }
 }

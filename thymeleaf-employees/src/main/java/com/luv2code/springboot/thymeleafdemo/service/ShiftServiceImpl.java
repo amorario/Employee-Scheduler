@@ -3,6 +3,8 @@ package com.luv2code.springboot.thymeleafdemo.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.luv2code.springboot.thymeleafdemo.dao.EmployeeRepository;
+import com.luv2code.springboot.thymeleafdemo.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +15,15 @@ import com.luv2code.springboot.thymeleafdemo.entity.Shift;
 public class ShiftServiceImpl implements ShiftService {
 
 	private ShiftRepository shiftRepository;
-	
+
+	@Autowired
+	private EmployeeRepository employeeRepository;
+
 	@Autowired
 	public ShiftServiceImpl(ShiftRepository theShiftRepository) {
 		shiftRepository = theShiftRepository;
 	}
-	
+
 	@Override
 	public List<Shift> findAll() {
 		return shiftRepository.findAll();
@@ -42,7 +47,12 @@ public class ShiftServiceImpl implements ShiftService {
 	}
 
 	@Override
-	public void save(Shift theShift) {
+	public void save(Shift theShift, int employeeId) {
+		//get employee by id
+		theShift.setEmployee(employeeRepository.getReferenceById(employeeId));
+
+		//System.out.println(theShift.getEmployee());
+
 		shiftRepository.save(theShift);
 	}
 

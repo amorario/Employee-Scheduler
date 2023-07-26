@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.luv2code.springboot.thymeleafdemo.entity.Employee;
 import com.luv2code.springboot.thymeleafdemo.entity.Shift;
+import com.luv2code.springboot.thymeleafdemo.service.EmployeeService;
 import com.luv2code.springboot.thymeleafdemo.service.ShiftService;
 
 import org.springframework.stereotype.Controller;
@@ -104,14 +105,14 @@ public class ShiftController {
 	}
 	
 	@PostMapping("/saveShift")
-	public String saveShift(@ModelAttribute("shift") Shift theShift) {
+	public String saveShift(@RequestParam("employeeId") int theId, @ModelAttribute("shift") Shift theShift) {
 
 
 		// save the shift
-		shiftService.save(theShift);
+		shiftService.save(theShift, theId);
 
 		// use a redirect to prevent duplicate submissions
-		return "redirect:employees/shifts/shifts-list";
+		return "redirect:/employees/list-employees";
 	}
 }
 

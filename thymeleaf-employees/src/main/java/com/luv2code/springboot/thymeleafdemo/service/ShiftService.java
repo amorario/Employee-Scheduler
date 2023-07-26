@@ -10,7 +10,7 @@ public interface ShiftService {
 	
 	Shift findById(int theId);
 	
-	void save(Shift theShift);
+	void save(Shift theShift, int employeeId);
 	
 	void deleteById(int theId);
 	
