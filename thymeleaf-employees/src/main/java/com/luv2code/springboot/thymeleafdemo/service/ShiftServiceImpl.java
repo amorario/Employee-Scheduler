@@ -30,6 +30,11 @@ public class ShiftServiceImpl implements ShiftService {
 	}
 
 	@Override
+	public List<Shift> findAllByEmployeeId (int theId) {
+		return employeeRepository.getReferenceById(theId).getShifts();
+	}
+	
+	@Override
 	public Shift findById(int theId) {
 		Optional<Shift> result = shiftRepository.findById(theId);
 		

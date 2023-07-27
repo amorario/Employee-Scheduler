@@ -24,20 +24,19 @@ public class ShiftController {
 	// add mapping for "/list"
 
 	@GetMapping("/shifts-list")
-	public String listShifts(@RequestParam("shiftId") int theId, Model theModel) {
+	public String listShifts(@RequestParam("employeeId") int theId, Model theModel) {
 
 		System.out.println("In the Shift Controller method listShifts()");
 		// get the shifts from db
-		List<Shift> theShifts = shiftService.findAll();
+		//List<Shift> theShifts = shiftService.findAll();
 
-		Shift theShift = shiftService.findById(theId);
-		Employee theEmployee = theShift.getEmployee();
+		//Employee theEmployee = theShift.getEmployee();
 
 		// add to the spring model
 		//theModel.addAttribute("shifts", theShifts);
 
-		theModel.addAttribute("shifts", theEmployee.getShifts());
-
+		// theModel.addAttribute("shifts", theEmployee.getShifts());
+		theModel.addAttribute("shifts",shiftService.findAllByEmployeeId(theId));
 		return "employees/shifts/list-shifts";
 	}
 
@@ -105,14 +104,16 @@ public class ShiftController {
 	}
 	
 	@PostMapping("/saveShift")
-	public String saveShift(@RequestParam("employeeId") int theId, @ModelAttribute("shift") Shift theShift) {
-
+	public String saveShift(@RequestParam("employeeId") int theId,
+							@ModelAttribute("shift") Shift theShift, Model theModel) {
 
 		// save the shift
 		shiftService.save(theShift, theId);
 
 		// use a redirect to prevent duplicate submissions
-		return "redirect:/employees/list-employees";
+
+		//return "redirect:/employees/list";
+		return listShifts(theId, theModel);
 	}
 }
 
