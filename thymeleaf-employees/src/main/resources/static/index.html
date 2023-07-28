@@ -45,46 +45,46 @@
       calendar.update({
         startDate: args.day
       });
-      calendar.events.load("/api/events");
+      calendar.shifts.load("/api/shifts");
     }
   });
   datePicker.init();
 
   const calendar = new DayPilot.Month("dp", {
-    eventEndSpec: "Date",
-    eventHeight: 30,
-    eventBarVisible: false,
+    shiftEndSpec: "Date",
+    shiftHeight: 30,
+    shiftBarVisible: false,
     onTimeRangeSelected: async (args) => {
-      const modal = await DayPilot.Modal.prompt("Create a new event:", "Event");
+      const modal = await DayPilot.Modal.prompt("Create a new shift:", "Shift");
       calendar.clearSelection();
       if (modal.canceled) {
         return;
       }
       const params = {
-        start: args.start,
+        date: args.date,
         end: args.end,
         text: modal.result
       };
-      const {data} = await DayPilot.Http.post('/api/events/create', params);
-      calendar.events.add(data);
+      const {data} = await DayPilot.Http.post('/api/shifts/create', params);
+      calendar.shifts.add(data);
     },
-    onEventMove: async (args) => {
+    onShiftMove: async (args) => {
         const params = {
           id: args.e.id(),
           start: args.newStart,
           end: args.newEnd
         };
-        const {data} = await DayPilot.Http.post('/api/events/move', params);
+        const {data} = await DayPilot.Http.post('/api/shifts/move', params);
     },
-    onEventResize: async (args) => {
+    onShiftResize: async (args) => {
         const params = {
           id: args.e.id(),
           start: args.newStart,
           end: args.newEnd
         };
-        const {data} = await DayPilot.Http.post('/api/events/move', params);
+        const {data} = await DayPilot.Http.post('/api/shifts/move', params);
     },
-    onBeforeEventRender: args => {
+    onBeforeShiftRender: args => {
       const color = args.data.color || "#888888";
       args.data.backColor = DayPilot.ColorUtil.lighter(color);
       args.data.borderColor = "darker";
@@ -112,8 +112,8 @@
               id: e.id()
             };
 
-            const {data} = await DayPilot.Http.post('/api/events/delete', params);
-            calendar.events.remove(e);
+            const {data} = await DayPilot.Http.post('/api/shifts/delete', params);
+            calendar.shifts.remove(e);
           }
         },
         {
@@ -173,21 +173,21 @@
         id: e.id(),
         color: color
       };
-      const {data} = await DayPilot.Http.post('/api/events/setColor', params);
+      const {data} = await DayPilot.Http.post('/api/shifts/setColor', params);
       e.data.color = color;
-      calendar.events.update(e);
+      calendar.shifts.update(e);
     },
     init() {
-      app.elements.previous.addEventListener("click", () => {
+      app.elements.previous.addShiftListener("click", () => {
         const current = datePicker.selectionDay;
         datePicker.select(current.addMonths(-1));
       });
-      app.elements.next.addEventListener("click", () => {
+      app.elements.next.addShiftListener("click", () => {
         const current = datePicker.selectionDay;
         datePicker.select(current.addMonths(1));
       });
 
-      calendar.events.load("/api/events");
+      calendar.shifts.load("/api/shifts");
     }
   };
 
@@ -197,7 +197,7 @@
 
 
 <style>
-    .month_default_event_inner {
+    .month_default_shift_inner {
         border-radius: 20px;
     }
 
