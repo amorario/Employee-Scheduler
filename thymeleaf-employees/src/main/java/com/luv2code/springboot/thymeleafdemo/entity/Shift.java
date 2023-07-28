@@ -37,6 +37,8 @@ public class Shift {
       //DateFormatSymbols syms = new DateFormatSymbols(new Locale ("en","US"));
       //DateFormat output = new SimpleDateFormat("MM-dd-yyyy", syms);
       //DateFormat output = new SimpleDateFormat("EEE MMMMM dd, YYYY 'at' hh:mm aaa", syms);
+			  
+      public String color;
   
       public Shift () {
       }
@@ -80,6 +82,15 @@ public class Shift {
       public void setEmployee (Employee employee) {
 	this.employee = employee;
       }
+      
+      
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
   
       @Override
       public String toString () {
