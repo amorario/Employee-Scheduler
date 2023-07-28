@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
+    <title>Save Shift</title>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h3>Shift Directory</h3>
+        <hr>
+
+        <p class="h4 mb-4">Save Shift</p>
+
+        <form action="#" th:action="@{/employees/shifts/saveShift(employeeId=${shift.employee.id})}"
+                         th:object="${shift}" method="POST">
+
+            <!-- Add hidden form field to handle update -->
+            <input type="hidden" th:field="*{id}" />
+
+            <input type="text" th:field="*{call}"
+                   class="form-control mb-4 w-25" placeholder="Type of call">
+
+            <input type="text" th:field="*{date}"
+                   class="form-control mb-4 w-25" placeholder="Scheduled date">
+
+
+            <button type="submit" class="btn btn-info col-2">Save</button>
+
+        </form>
+        <hr>
+        <a th:href="@{/employees/shifts-list(employeeId=${shift.employee.id})}">Back to Shift List</a>
+    </div>
+
+
+</body>
+
+</html>
+
