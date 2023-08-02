@@ -24,7 +24,28 @@
 		class="btn btn-primary btn-sm mb-3">
 		Add Employee
 	</a>
+	
+	<form action="#" th:action="@{/employees/shifts/generateMonthlyShifts(month)}" th:object="${month}" method="post">
 
+            <select th:field="*{month}">
+		  <option th:value="'1'" th:text="JANUARY"></option>
+		  <option th:value="'2'" th:text="FEBRUARY"></option>		  
+		  <option th:value="'3'" th:text="MARCH"></option>
+		  <option th:value="'4'" th:text="APRIL"></option>		  
+		  <option th:value="'5'" th:text="MAY"></option>
+		  <option th:value="'6'" th:text="JUNE"></option>		  
+		  <option th:value="'7'" th:text="JULY"></option>
+		  <option th:value="'8'" th:text="AUGUST"></option>
+		  <option th:value="'9'" th:text="SEPTEMBER"></option>
+		  <option th:value="'10'" th:text="OCTOBER"></option>		  
+		  <option th:value="'11'" th:text="NOVEMBER"></option>
+		  <option th:value="'12'" th:text="DECEMBER"></option>
+	    </select>
+
+            <button type="submit" class="btn btn-info col-2">Generate Monthly Shifts</button>
+
+        </form>
+	
 	<table class="table table-bordered table-striped">
 		<thead class="table-dark">
 			<tr>

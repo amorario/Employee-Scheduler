@@ -115,6 +115,41 @@ public class ShiftController {
 		//return "redirect:/employees/list";
 		return listShifts(theId, theModel);
 	}
+	
+	@PostMapping("/generateMonthlyShifts")
+	public String generateMonthlyShifts(@RequestParam("month") int theMonth, Model theModel) {
+		
+		List<Shift> monthlyShifts= new ArrayList<>();
+		Month month = Month.of(theMonth);
+		String call;
+		
+	  
+		for (LocalDate date = LocalDate.of(2023, theMonth, 1) ; date.isBefore(LocalDate.of(2023, theMonth, m.length(false)); date = date.plusDays(1)) { // tbd isLeapYear
+		    for (int i = 0 ; i<4 ; i++) {
+			switch (i) {
+			  case 0:
+			    call = "NO";
+			    break;
+			  case 1:
+			    call = "EARLY";
+			    break;
+			  case 2:
+			    call = "MID";
+			    break;
+			  case 3:
+			    call = "LATE";
+			    break;
+			  default:
+			    call = "NO";
+			    break;
+			Shift s = new Shift(call, date);
+			  monthlyShifts.add(s);
+		      }
+		}
+
+		theModel.addAttribute("shifts",monthlyShifts);
+		return "employees/shifts/list-monthly-shifts";
+	}
 }
 
 

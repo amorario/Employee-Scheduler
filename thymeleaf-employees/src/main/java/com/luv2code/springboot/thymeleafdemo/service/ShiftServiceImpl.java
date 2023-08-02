@@ -1,6 +1,7 @@
 package com.luv2code.springboot.thymeleafdemo.service;
 
 import java.util.List;
+import java.util.Collections;
 import java.util.Optional;
 
 import com.luv2code.springboot.thymeleafdemo.dao.EmployeeRepository;
@@ -65,7 +66,27 @@ public class ShiftServiceImpl implements ShiftService {
 	public void deleteById(int theId) {
 		shiftRepository.deleteById(theId);
 	}
-
+	
+	public void assignShiftsToEmployees(List<Shift> shiftList) {
+	      
+	      List<Employee> employeeList = employeeRepository.findAllByOrderByLastNameAsc();
+	      Collections.shuffle(employeeList);
+	      int stretch; 
+	      int j =0;
+	  
+	      for (Employee e : employeeList) {
+		
+		for (int i = j; i <= shiftList.size() ; i+4) {
+		    if (stretch > 0 && shiftList.get(i).getEmployee() != null) {
+		      shiftList.get(i).setEmployee(e);
+		    }
+		}
+		
+		j++;
+		
+	      }
+	    
+	  }
 }
 
 
