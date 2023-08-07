@@ -75,18 +75,35 @@ public class ShiftServiceImpl implements ShiftService {
 	      int j =0;
 	  
 	      for (Employee e : employeeList) {
-		
-		for (int i = j; i <= shiftList.size() ; i+4) {
-		    if (stretch > 0 && shiftList.get(i).getEmployee() != null) {
-		      shiftList.get(i).setEmployee(e);
-		    }
-		}
-		
-		j++;
+			  int [] stretches = generateStretches(shiftList.size()/8);
+			  for (int i = j; i <= shiftList.size() ; i++) {
+				stretch = 0;
+				for (int k = 0; ;  )
+				if (stretch > 0 && shiftList.get(i).getEmployee() != null) {
+				  shiftList.get(i).setEmployee(e);
+				}
+			}
+
+			j++;
 		
 	      }
 	    
 	  }
+	/*  Shifts: 1 of 4 amounts of shifts are generated-
+		1. 30 days * 4 shifts/day = 120 shifts, 120/8 = 15 shifts/employee; stretches = 7,8 each
+		2. 31 days * 4 shifts/day = 124 shifts, 124/8 = 15 shifts for 4 employees, 16 for the rest; stretches = 7,8 for 4 employees, 8,8 for the rest
+		3. 28 days * 4 shifts/day = 112 shifts, 112/8 = 14 shifts/employee; stretches = 7,7 each
+		4. 29 days * 4 shifts/day = 116 shifts, 116/8 = 14 shifts for 4 employees, 15 for the rest; stretches = 7,7 for 4 employees, 7,8 for the rest
+*/
+	public int[] generateStretches(int shiftsAmount) {
+		int [] stretches = new int[3];			// only 2-3 stretches per month
+		stretches[2] = 0;						// for now, only 2 stretches allowed
+		stretches[0] = (Math.random() < .5) ? 7 : 8;
+		stretches[1] = shiftsAmount - stretches[0];
+		return stretches;
+	}
+
+
 }
 
 
