@@ -87,36 +87,49 @@ public class ShiftServiceImpl implements ShiftService {
 	      
 	      List<Employee> employeeList = employeeRepository.findAllByOrderByLastNameAsc();
 	      Collections.shuffle(employeeList);
-	      int stretch; 
-	      int j =0;
+	      int stretch, stretchNum;
+	  
 	      int previousMonth = shiftList.get(0).getDate().minusMonths(1L).getMonth();
+	      int previousYear = shiftList.get(0).getDate().minusMonths(1L).getYear();
 	      if ((previousMonth == 2) || (previousMonth == 4) || (previousMonth == 6) || (previousMonth == 9) || (previousMonth == 11))	{
 		// need 2 months prior to current month
 		previousMonth = shiftList.get(0).getDate().minusMonths(2L).getMonth();
+		previousYear = shiftList.get(0).getDate().minusMonths(2L).getYear();
 	      }
-	      int previousYear = shiftList.get(0).getDate().minusMonths(1L).getYear();
-	      List<Shifts> previousShifts = getMonthlyShifts(previousMonth, previousYear);
-	      int monthLength = shiftList.get(0).getDate().lengthOfMonth();
-	      boolean[] moreShifts = new boolean[8];
+	      
+	      List<Shifts> previousShifts = getMonthlyShifts(previousMonth, previousYear);		// list of shifts of month that had odd # of days
+	      int monthLength = shiftList.get(0).getDate().lengthOfMonth();		// current month length
 	      int [] stretches = new int[3];
 	      
 	      for (Employee e : employeeList) {
 		if ((monthLength == 30) || (monthLength == 28))
 		  stretches = generateStretches(shiftList.size()/8);
 		else if(e.getShiftsAmount(previousShifts) == 16) {				// # of previous shifts from last odd # days (31 or 29) month
-		  stretches = generateStretches(15);
+		  stretches = generateStretches(15);						// Employee e did more shifts the last odd #'d month
 		} else
-		  stretches = generateStretches(16);
+		  stretches = generateStretches(16);						// Employee e did less shifts the last odd #'d month
+
+		// Employee e, stretches [x,y,0], current/unassigned shiftList
+		stretch = 0;
+		for (int i = 0; i <= shiftList.size()-1 ;) {
+		    if (shiftList.get(i).getEmployee() != null)					// on to the next shift if this one is already assigned
+		      continue;
+		    stretch = stretch + stretches[stretchNum];
+		    while (stretch > 0) {
+		      shiftList.get(i).setEmployee(e);
+		      if (!(shiftList.get(i).getCall().equals("LATE")))
+			i += 4;										// get to the next day's shifts, unless its LATE call
+		      
+		      i++;
+		      stretch--;
+		      
+		      if (shiftList.get(i).getEmployee() != null)
+			break;
+		    }
+		    i = i + 28;										// 7 days later...
+		    stretchNum++;
+		}
 		
-		  
-		  for (int i = j; i <= shiftList.size() ; i++) {
-			stretch = 0;
-			for (int k = 0; ;  )
-			if (stretch > 0 && shiftList.get(i).getEmployee() != null) {
-			  shiftList.get(i).setEmployee(e);
-			}
-		  }
-		j++;
 	      }
 	    
 	  }

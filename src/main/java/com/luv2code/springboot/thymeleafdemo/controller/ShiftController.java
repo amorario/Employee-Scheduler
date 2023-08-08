@@ -143,7 +143,7 @@ public class ShiftController {
 						call = "LATE";
 						break;
 					default:
-						call = "NO";
+						call = "BACKUP";
 						break;
 
 				}
