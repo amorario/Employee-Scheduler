@@ -123,33 +123,39 @@ public class ShiftController {
 	public String generateMonthlyShifts(@RequestParam("month") int theMonth, Model theModel) {
 
 		List<Shift> monthlyShifts = new ArrayList<>();
-		Month m = Month.of(theMonth);
-		String call;
-		LocalDate date;
-
-		for (date= LocalDate.of(2023, theMonth, 1); date.isBefore(LocalDate.of(2023, theMonth, m.length(false))); date = date.plusDays(1)) { // tbd isLeapYear
-			for (int i = 0; i < 4; i++) {
-				switch (i) {
-					case 0:
-						call = "NO";
-						break;
-					case 1:
-						call = "EARLY";
-						break;
-					case 2:
-						call = "MID";
-						break;
-					case 3:
-						call = "LATE";
-						break;
-					default:
-						call = "BACKUP";
-						break;
-
-				}
-				Shift s = new Shift(call, date);
-				monthlyShifts.add(s);
-			}
+	        Month m = Month.of(theMonth);
+	        String call;
+	        LocalDate date;
+	        //Employee e = new Employee("John", "Doe", "johndoe@fakedomain.com");
+	        //e.setId(1);
+	        //int id = 0;
+	        
+	        for (date= LocalDate.of(2023, theMonth, 1); date.isBefore(LocalDate.of(2023, (theMonth+1) , 1)); date = date.plusDays(1)) { // tbd isLeapYear
+	            for (int i = 0; i < 4; i++) {
+	                switch (i) {
+	                    case 0:
+	                        call = "NO";
+	                        break;
+	                    case 1:
+	                        call = "EARLY";
+	                        break;
+	                    case 2:
+	                        call = "MID";
+	                        break;
+	                    case 3:
+	                        call = "LATE";
+	                        break;
+	                    default:
+	                        call = "BACKUP";
+	                        break;
+	
+	                }
+	                Shift s = new Shift(call, date);
+	                //s.setId(id++);
+	                //s.setEmployee(e);
+	                monthlyShifts.add(s);
+	            }
+	        }
 
 			theModel.addAttribute("shifts", monthlyShifts);
 
