@@ -69,7 +69,7 @@ public class ShiftServiceImpl implements ShiftService {
 		shiftRepository.deleteById(theId);
 	}
 	
-	public List<Shifts> getMonthlyShifts (int month, int year) {
+	public List<Shift> getMonthlyShifts (int month, int year) {
 	  //allShifts = this.findAll();
 	  monthlyShifts.clear();
 	  for (Shift s : this.findAll()) {
@@ -81,6 +81,12 @@ public class ShiftServiceImpl implements ShiftService {
 	    
 	  }
 	  return monthlyShifts;
+	}
+	
+	@Override												// save a list of UNASSIGNED shifts
+	public void saveMonthlyShifts(List<Shift> shiftList) {
+		for (Shift s : shiftList)
+		  shiftRepository.save(s);
 	}
 	
 	public void assignShiftsToEmployees(List<Shift> shiftList) {			// shiftList is a generated shift list WITHOUT employees
@@ -148,6 +154,14 @@ public class ShiftServiceImpl implements ShiftService {
 		  stretches[0] = 8;
 		stretches[1] = shiftsAmount - stretches[0];
 		return stretches;
+	}
+	
+	public boolean shiftsExists(Month m) {
+	  for (Shift s : shiftRepository.findAll()) {
+	    if (s.getDate().getMonth() == (m))
+	      return true;
+	  }
+	  return false;
 	}
 
 

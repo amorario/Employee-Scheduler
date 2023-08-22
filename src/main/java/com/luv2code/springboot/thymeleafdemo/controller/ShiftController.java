@@ -121,46 +121,51 @@ public class ShiftController {
 	
 	@PostMapping("/generateMonthlyShifts")
 	public String generateMonthlyShifts(@RequestParam("month") int theMonth, Model theModel) {
+	  Month m = Month.of(theMonth);
+	  String call;
+	  LocalDate date = LocalDate.of(2023, theMonth, 1);
+	  List<Shift> monthlyShifts;
+	  // check for month's shifts
+	  
+	  if (shiftService.shiftExists(m)) {
+	    monthlyShifts = shiftService.getMonthlyShifts(theMonth, 2023);
+	    for (Shift s : monthlyShifts) {
+	      s.setEmployee(null);
+	    }
+	    
+	  }
+	  else {
+	    monthlyShifts = new ArrayList<>();
+		
+	  for (date; date.isBefore(LocalDate.of(2023, theMonth, m.length(false))); date = date.plusDays(1)) { // tbd isLeapYear
+		  for (int i = 0; i < 4; i++) {
+			  switch (i) {
+				  case 0:
+					  call = "NO";
+					  break;
+				  case 1:
+					  call = "EARLY";
+					  break;
+				  case 2:
+					  call = "MID";
+					  break;
+				  case 3:
+					  call = "LATE";
+					  break;
+				  default:
+					  call = "BACKUP";
+					  break;
 
-		List<Shift> monthlyShifts = new ArrayList<>();
-	        Month m = Month.of(theMonth);
-	        String call;
-	        LocalDate date;
-	        //Employee e = new Employee("John", "Doe", "johndoe@fakedomain.com");
-	        //e.setId(1);
-	        //int id = 0;
-	        
-	        for (date= LocalDate.of(2023, theMonth, 1); date.isBefore(LocalDate.of(2023, (theMonth+1) , 1)); date = date.plusDays(1)) { // tbd isLeapYear
-	            for (int i = 0; i < 4; i++) {
-	                switch (i) {
-	                    case 0:
-	                        call = "NO";
-	                        break;
-	                    case 1:
-	                        call = "EARLY";
-	                        break;
-	                    case 2:
-	                        call = "MID";
-	                        break;
-	                    case 3:
-	                        call = "LATE";
-	                        break;
-	                    default:
-	                        call = "BACKUP";
-	                        break;
+			  }
+			  Shift s = new Shift(call, date);
+			  monthlyShifts.add(s);
+		  }
+	  }
+	  shiftService.saveMonthlyShifts(monthlyShifts);
+	}
 	
-	                }
-	                Shift s = new Shift(call, date);
-	                //s.setId(id++);
-	                //s.setEmployee(e);
-	                monthlyShifts.add(s);
-	            }
-	        }
-
-			theModel.addAttribute("shifts", monthlyShifts);
-
-		}
-		return "employees/shifts/list-monthly-shifts";
+	  theModel.addAttribute("shifts", monthlyShifts);
+	  return "employees/shifts/list-monthly-shifts";
 	}
 }
 

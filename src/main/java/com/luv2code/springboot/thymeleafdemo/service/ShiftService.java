@@ -9,12 +9,13 @@ public interface ShiftService {
 	List<Shift> findAll();
 
 	List<Shift> findAllByEmployeeId (int theId);
+  
 	Shift findById(int theId);
 	
 	void save(Shift theShift, int employeeId);
 	
 	void deleteById(int theId);
 
-
+	void saveMonthlyShifts(List<Shift> shiftList);
 	
 }

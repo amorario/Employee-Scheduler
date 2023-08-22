@@ -25,23 +25,23 @@
 		Add Employee
 	</a>
 	
-	<form:form method = "POST" action = "@{/employees/shifts/generateMonthlyShifts}">
+	<form:form method = "POST" action = "@{/employees/shifts/generateMonthlyShifts(${month})}">
 	  <tr>
 		 <td><form:label path = "month">Month</form:label></td>
 		 <td>
-		    <select id = "month" name = "month">
-		       <option value = 1>JANUARY</option>
-		       <option value = 2>FEBRUARY</option>
-		       <option value = 3>MARCH</option>
-		       <option value = 4>APRIL</option>
-		       <option value = 5>MAY</option>
-		       <option value = 6>JUNE</option>
-		       <option value = 7>JULY</option>
-		       <option value = 8>AUGUST</option>
-		       <option value = 9>SEPTEMBER</option>
-		       <option value = 10>OCTOBER</option>
-		       <option value = 11>NOVEMBER</option>
-		       <option value = 12>DECEMBER</option>
+		    <select th:field="*{month}">
+		       <option th:value = 1>JANUARY</option>
+		       <option th:value = 2>FEBRUARY</option>
+		       <option th:value = 3>MARCH</option>
+		       <option th:value = 4>APRIL</option>
+		       <option th:value = 5>MAY</option>
+		       <option th:value = 6>JUNE</option>
+		       <option th:value = 7>JULY</option>
+		       <option th:value = 8>AUGUST</option>
+		       <option th:value = 9>SEPTEMBER</option>
+		       <option th:value = 10>OCTOBER</option>
+		       <option th:value = 11>NOVEMBER</option>
+		       <option th:value = 12>DECEMBER</option>
 		    </select>    	
 		 </td>
 	      </tr>   	  
