@@ -5,6 +5,7 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.time.format.TextStyle;
 
 import com.luv2code.springboot.thymeleafdemo.entity.Employee;
 import com.luv2code.springboot.thymeleafdemo.entity.Shift;
@@ -37,11 +38,11 @@ public class ShiftController {
 	}
 /*
 	List<String> strNearbyMonths = new ArrayList<>();
- 	current = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+ 	current = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
         current = current.minusMonths(2);
 	for (int i = 0; i < 6 ; i++) {
-            strNearbyMonths.add(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
-            System.out.println(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
+            strNearbyMonths.add(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US) + " "+ current.getYear());
+            //System.out.println(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
             current = current.plusMonths(1);
         }
 */
