@@ -35,7 +35,16 @@ public class ShiftController {
 		nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
 				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
 	}
-
+/*
+	List<String> strNearbyMonths = new ArrayList<>();
+ 	current = LocalDate.of(LocalDate.now().getYear(), 1, 1);
+        current = current.minusMonths(2);
+	for (int i = 0; i < 6 ; i++) {
+            strNearbyMonths.add(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
+            System.out.println(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
+            current = current.plusMonths(1);
+        }
+*/
 	private ShiftService shiftService;
 
 	public ShiftController(ShiftService theShiftService) {
