@@ -3,6 +3,7 @@ package com.luv2code.springboot.thymeleafdemo.controller;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.luv2code.springboot.thymeleafdemo.entity.Employee;
@@ -12,11 +13,28 @@ import com.luv2code.springboot.thymeleafdemo.service.ShiftService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("employees/shifts")
 public class ShiftController {
+
+	private static List<Integer> nearbyMonths;
+	static {
+		LocalDate prior2, prior1, current, next1, next2, next3;		// previous 2 months, current month, and the next 3 months
+		int currentMonth = LocalDate.now().getMonthValue();
+		int currentYear = LocalDate.now().getYear();
+		current = LocalDate.of(currentYear, currentMonth, 1);
+		prior2 = current.minusMonths(2);
+		prior1 = current.minusMonths(1);
+		next1 = current.plusMonths(1);
+		next2 = current.plusMonths(2);
+		next3 = current.plusMonths(3);
+		nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
+				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
+	}
 
 	private ShiftService shiftService;
 
@@ -105,7 +123,7 @@ public class ShiftController {
 		return "redirect:/employees/list";
 
 	}
-	
+
 	@PostMapping("/saveShift")
 	public String saveShift(@RequestParam("employeeId") int theId,
 							@ModelAttribute("shift") Shift theShift, Model theModel) {
@@ -118,57 +136,82 @@ public class ShiftController {
 		//return "redirect:/employees/list";
 		return listShifts(theId, theModel);
 	}
-	
-	@PostMapping("/generateMonthlyShifts")
-	public String generateMonthlyShifts(@RequestParam("month") int theMonth, Model theModel) {
-	  Month m = Month.of(theMonth);
-	  String call;
-	  LocalDate date = LocalDate.of(2023, theMonth, 1);
-	  List<Shift> monthlyShifts;
-	  // check for month's shifts
-	  
-	  if (shiftService.shiftExists(m)) {
-	    monthlyShifts = shiftService.getMonthlyShifts(theMonth, 2023);
-	    for (Shift s : monthlyShifts) {
-	      s.setEmployee(null);
-	    }
-	    
-	  }
-	  else {
-	    monthlyShifts = new ArrayList<>();
-		
-	  for (date; date.isBefore(LocalDate.of(2023, theMonth, m.length(false))); date = date.plusDays(1)) { // tbd isLeapYear
-		  for (int i = 0; i < 4; i++) {
-			  switch (i) {
-				  case 0:
-					  call = "NO";
-					  break;
-				  case 1:
-					  call = "EARLY";
-					  break;
-				  case 2:
-					  call = "MID";
-					  break;
-				  case 3:
-					  call = "LATE";
-					  break;
-				  default:
-					  call = "BACKUP";
-					  break;
 
-			  }
-			  Shift s = new Shift(call, date);
-			  monthlyShifts.add(s);
-		  }
-	  }
-	  shiftService.saveMonthlyShifts(monthlyShifts);
+	@PostMapping("/viewMonthlyShifts")
+	public String viewMonthlyShifts(@ModelAttribute("month") @Validated @RequestBody int theMonth, Model theModel) {
+		Month m = Month.of(theMonth);
+
+		//theModel.addAttribute("shifts", monthlyShifts);
+		return "employees/shifts/list-monthly-shifts";
 	}
-	
-	  theModel.addAttribute("shifts", monthlyShifts);
-	  return "employees/shifts/list-monthly-shifts";
+
+	@PostMapping("/generateMonthlyShifts")
+	public String generateMonthlyShifts(@ModelAttribute("month") @Validated @RequestBody int theMonth, Model theModel) {
+		Month m = Month.of(theMonth);
+		String call;
+		LocalDate date = LocalDate.of(2023, theMonth, 1);
+		List<Shift> monthlyShifts;
+		// check for month's shifts
+
+		if (shiftService.shiftExists(m)) {
+			monthlyShifts = shiftService.getMonthlyShifts(theMonth, 2023);
+			for (Shift s : monthlyShifts) {
+				s.setEmployee(null);
+			}
+
+		}
+		else {
+			monthlyShifts = new ArrayList<>();
+
+			for (; date.isBefore(LocalDate.of(2023, theMonth +1, 1 )); date = date.plusDays(1)) { // tbd isLeapYear
+				for (int i = 0; i < 4; i++) {
+					switch (i) {
+						case 0:
+							call = "NO";
+							break;
+						case 1:
+							call = "EARLY";
+							break;
+						case 2:
+							call = "MID";
+							break;
+						case 3:
+							call = "LATE";
+							break;
+						default:
+							call = "BACKUP";
+							break;
+
+					}
+					Shift s = new Shift(call, date);
+					monthlyShifts.add(s);
+				}
+			}
+			shiftService.saveMonthlyShifts(monthlyShifts);
+		}
+
+		theModel.addAttribute("shifts", monthlyShifts);
+		return "employees/shifts/list-monthly-shifts";
+	}
+
+	@GetMapping("/viewMonth")
+	public String getNearbyMonths(Model model) {
+		LocalDate prior2, prior1, current, next1, next2, next3;		// previous 2 months, current month, and the next 3 months
+		int currentMonth = LocalDate.now().getMonthValue();
+		int currentYear = LocalDate.now().getYear();
+		current = LocalDate.of(currentYear, currentMonth, 1);
+		prior2 = current.minusMonths(2);
+		prior1 = current.minusMonths(1);
+		next1 = current.plusMonths(1);
+		next2 = current.plusMonths(2);
+		next3 = current.plusMonths(3);
+		List<Integer> nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
+				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
+
+		model.addAttribute("nearbyMonths", nearbyMonths);
+		return "employees/shifts/list-monthly-shifts";
 	}
 }
-
 
 
 

@@ -41,10 +41,5 @@ INSERT INTO `employee` VALUES
 	(4,'Yuri','Petrov','yuri@luv2code.com'),
 	(5,'Juan','Vega','juan@luv2code.com');
     
-INSERT INTO `shift` VALUES 
-	(11,'EARLY','2023-08-12',2),
-	(12,'LATE','2023-08-17',5),
-	(13,'MID','2023-08-03',4),
-	(14,'NO','2023-08-16',1),
-	(15,'EARLY','2023-08-15',2);
+
     

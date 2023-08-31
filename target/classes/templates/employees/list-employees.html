@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:form="http://www.w3.org/1999/xhtml">
 
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
+	<!-- Bootstrap CSS -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
 
 	<title>Employee Directory</title>
@@ -21,56 +21,95 @@
 
 	<!-- Add a button -->
 	<a th:href="@{/employees/showFormForAdd}"
-		class="btn btn-primary btn-sm mb-3">
+	   class="btn btn-primary btn-sm mb-3">
 		Add Employee
 	</a>
+	<form action="#" th:action="@{/employees/shifts/generateMonthlyShifts}" method="post">
+		<label path = "month">Month
+			<select style="width: 115px;" class="form-control" id="month" name="month">
+				<option th:value = 1>JANUARY</option>
+				<option th:value = 2>FEBRUARY</option>
+				<option th:value = 3>MARCH</option>
+				<option th:value = 4>APRIL</option>
+				<option th:value = 5>MAY</option>
+				<option th:value = 6>JUNE</option>
+				<option th:value = 7>JULY</option>
+				<option th:value = 8>AUGUST</option>
+				<option th:value = 9>SEPTEMBER</option>
+				<option th:value = 10>OCTOBER</option>
+				<option th:value = 11>NOVEMBER</option>
+				<option th:value = 12>DECEMBER</option>
+			</select>
+		</label>
+		<td colspan = "1">
+			<input type = "submit" value = "Generate Monthly Schedule"/>
+		</td>
+	</form>
+
+
+	<form action="#" th:action="@{/employees/shifts/viewMonth}" th:object="${date}" method="POST">
+
+		<!-- Add hidden form field to handle update -->
+		<select style="width: 115px;" class="form-control" id="month2" name="month">
+			<option value="">Select month</option>
+			<option
+				th:each="Month : ${nearbyMonths}"
+				th:value="${Month}"
+				th:text="${Month}">
+			</option>
+		</select>
+
+		<td colspan = "1">
+			<input type = "submit" value = "View Monthly Schedule"/>
+		</td>
+
+	</form>
+
+
 
 	<table class="table table-bordered table-striped">
 		<thead class="table-dark">
-			<tr>
-				<th>First Name</th>
-				<th>Last Name</th>
-				<th>Email</th>
-				<th>Action</th>
-			</tr>
+		<tr>
+			<th>First Name</th>
+			<th>Last Name</th>
+			<th>Email</th>
+			<th>Action</th>
+		</tr>
 		</thead>
-		
+
 		<tbody>
-			<tr th:each="tempEmployee : ${employees}">
-			
-				<td th:text="${tempEmployee.firstName}" />	
-				<td th:text="${tempEmployee.lastName}" />	
-				<td th:text="${tempEmployee.email}" />
+		<tr th:each="tempEmployee : ${employees}">
 
-				<!-- Add update button/link -->
-				<td>
-					<a th:href="@{/employees/showFormForUpdate(employeeId=${tempEmployee.id})}"
-					   class="btn btn-info btn-sm">
-						Update
-					</a>
+			<td th:text="${tempEmployee.firstName}" />
+			<td th:text="${tempEmployee.lastName}" />
+			<td th:text="${tempEmployee.email}" />
 
-					<!-- Add "delete" button/link -->
-					<a th:href="@{/employees/delete(employeeId=${tempEmployee.id})}"
-					   class="btn btn-danger btn-sm"
-					   onclick="if (!(confirm('Are you sure you want to delete this employee?'))) return false">
-						Delete
-					</a>
+			<!-- Add update button/link -->
+			<td>
+				<a th:href="@{/employees/showFormForUpdate(employeeId=${tempEmployee.id})}"
+				   class="btn btn-info btn-sm">
+					Update
+				</a>
 
-					<a th:href="@{/employees/shifts/shifts-list(employeeId=${tempEmployee.id})}"
-					   class="btn btn-info btn-sm">
-						Shifts
-					</a>
+				<!-- Add "delete" button/link -->
+				<a th:href="@{/employees/delete(employeeId=${tempEmployee.id})}"
+				   class="btn btn-danger btn-sm"
+				   onclick="if (!(confirm('Are you sure you want to delete this employee?'))) return false">
+					Delete
+				</a>
 
-				</td>
+				<a th:href="@{/employees/shifts/shifts-list(employeeId=${tempEmployee.id})}"
+				   class="btn btn-info btn-sm">
+					Shifts
+				</a>
 
-			</tr>
-		</tbody>		
+			</td>
+
+		</tr>
+		</tbody>
 	</table>
-	
+
 </div>
-	
+
 </body>
 </html>
-
-
-

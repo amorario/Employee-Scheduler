@@ -1,5 +1,8 @@
 package com.luv2code.springboot.thymeleafdemo.controller;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.luv2code.springboot.thymeleafdemo.entity.Employee;
@@ -16,7 +19,20 @@ public class EmployeeController {
 
 	private EmployeeService employeeService;
 
-
+	private static List<Integer> nearbyMonths;
+	static {
+		LocalDate prior2, prior1, current, next1, next2, next3;		// previous 2 months, current month, and the next 3 months
+		int currentMonth = LocalDate.now().getMonthValue();
+		int currentYear = LocalDate.now().getYear();
+		current = LocalDate.of(currentYear, currentMonth, 1);
+		prior2 = current.minusMonths(2);
+		prior1 = current.minusMonths(1);
+		next1 = current.plusMonths(1);
+		next2 = current.plusMonths(2);
+		next3 = current.plusMonths(3);
+		nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
+				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
+	}
 	public EmployeeController(EmployeeService theEmployeeService) {
 		employeeService = theEmployeeService;
 	}
@@ -31,7 +47,7 @@ public class EmployeeController {
 
 		// add to the spring model
 		theModel.addAttribute("employees", theEmployees);
-
+		theModel.addAttribute("nearbyMonths", nearbyMonths);
 		return "employees/list-employees";
 	}
 
