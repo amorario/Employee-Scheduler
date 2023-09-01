@@ -136,53 +136,53 @@ public class ShiftController {
 	*/
 
 	@PostMapping("/generateMonthlyShifts")
-	public String generateMonthlyShifts(@ModelAttribute("month") @Validated @RequestBody int theMonth, Model theModel) {
-		Month m = Month.of(theMonth);
-		String call;
-		LocalDate date = LocalDate.of(2023, theMonth, 1);
-		List<Shift> monthlyShifts;
-		// check for month's shifts
+	public String generateMonthlyShifts(@ModelAttribute("month") @Validated @RequestBody String theMonth, Model theModel) {
+        String[] splitStr = theMonth.split("\\s+");
+        Month m = Month.valueOf(splitStr[0].toUpperCase());         // Month object chosen by user
+        int year = Integer.parseInt(splitStr[1]);                   // year integer chosen by user
+        String call;
+        LocalDate date = LocalDate.of(year, m.getValue(), 1);
+        List<Shift> monthlyShifts;
+        
+        // check for month's shifts
+        if (shiftService.shiftExists(m)) {
+            monthlyShifts = shiftService.getMonthlyShifts(m.getValue(), year);
+            for (Shift s : monthlyShifts) {
+                s.setEmployee(null);
+            }
+        }
+        else {
+            monthlyShifts = new ArrayList<>();
+            LocalDate nextMonth = date.plusMonths(1);
+            for (; date.isBefore(nextMonth); date = date.plusDays(1)) { 
+                for (int i = 0; i < 4; i++) {
+                    switch (i) {
+                        case 0:
+                            call = "NO";
+                            break;
+                        case 1:
+                            call = "EARLY";
+                            break;
+                        case 2:
+                            call = "MID";
+                            break;
+                        case 3:
+                            call = "LATE";
+                            break;
+                        default:
+                            call = "BACKUP";
+                            break;
+                    }
+                    Shift s = new Shift(call, date);
+                    monthlyShifts.add(s);
+                }
+            }
+            shiftService.saveMonthlyShifts(monthlyShifts);
+        }
 
-		if (shiftService.shiftExists(m)) {
-			monthlyShifts = shiftService.getMonthlyShifts(theMonth, 2023);
-			for (Shift s : monthlyShifts) {
-				s.setEmployee(null);
-			}
-
-		}
-		else {
-			monthlyShifts = new ArrayList<>();
-
-			for (; date.isBefore(LocalDate.of(2023, theMonth +1, 1 )); date = date.plusDays(1)) { // tbd isLeapYear
-				for (int i = 0; i < 4; i++) {
-					switch (i) {
-						case 0:
-							call = "NO";
-							break;
-						case 1:
-							call = "EARLY";
-							break;
-						case 2:
-							call = "MID";
-							break;
-						case 3:
-							call = "LATE";
-							break;
-						default:
-							call = "BACKUP";
-							break;
-
-					}
-					Shift s = new Shift(call, date);
-					monthlyShifts.add(s);
-				}
-			}
-			shiftService.saveMonthlyShifts(monthlyShifts);
-		}
-
-		theModel.addAttribute("shifts", monthlyShifts);
-		return "employees/shifts/list-monthly-shifts";
-	}
+        theModel.addAttribute("shifts", monthlyShifts);
+        return "employees/shifts/list-monthly-shifts";
+    }
 
 	@GetMapping("/viewMonth")
 	public String viewMonth(@ModelAttribute("month") @Validated @RequestBody String theMonth, Model theModel) {
