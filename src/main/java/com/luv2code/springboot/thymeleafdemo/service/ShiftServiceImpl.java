@@ -168,6 +168,21 @@ public class ShiftServiceImpl implements ShiftService {
 		return false;
 	}
 
+	private static int checkShiftsInPriorMonth (int id, LocalDate firstOfMonth) {
+	  // send user id and month to service method and return number of shifts worked in  last 8 days prior to start of next month
+	  // List<Shift> monthlyShifts = shiftService.getMonthlyShifts(currentMonth.getMonth().getValue(), currentMonth.getYear());
+	  int stretch;
+	  LocalDate minus8Days = firstOfMonth.minusDays(8);
+	  
+	  for (Shift s : this.findAll()) {
+	    if (s.getDate().
+	    
+	  }
+	  
+	  
+	  
+	  
+	}
 
 }
 
