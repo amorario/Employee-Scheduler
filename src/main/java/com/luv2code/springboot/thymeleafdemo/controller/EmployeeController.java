@@ -1,9 +1,12 @@
 package com.luv2code.springboot.thymeleafdemo.controller;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import com.luv2code.springboot.thymeleafdemo.entity.Employee;
 import com.luv2code.springboot.thymeleafdemo.service.EmployeeService;
@@ -20,11 +23,12 @@ public class EmployeeController {
 	private EmployeeService employeeService;
 
 	private static List<Integer> nearbyMonths;
+
 	static {
-		LocalDate prior2, prior1, current, next1, next2, next3;		// previous 2 months, current month, and the next 3 months
+		LocalDate prior2, prior1, current, next1, next2, next3;        // previous 2 months, current month, and the next 3 months
 		int currentMonth = LocalDate.now().getMonthValue();
 		int currentYear = LocalDate.now().getYear();
-		current = LocalDate.of(currentYear, currentMonth, 1);
+		current = LocalDate.of(currentYear, 1, 1);
 		prior2 = current.minusMonths(2);
 		prior1 = current.minusMonths(1);
 		next1 = current.plusMonths(1);
@@ -33,6 +37,20 @@ public class EmployeeController {
 		nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
 				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
 	}
+
+
+	private static List<String> strNearbyMonths;
+	static {
+		LocalDate current = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
+		current = current.minusMonths(2);
+		strNearbyMonths = new ArrayList<>();
+		for(int i = 0; i< 6; i++) {
+			strNearbyMonths.add(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE, Locale.US) + " " + current.getYear());
+			//System.out.println(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
+			current = current.plusMonths(1);
+		}
+	}
+
 	public EmployeeController(EmployeeService theEmployeeService) {
 		employeeService = theEmployeeService;
 	}
@@ -47,7 +65,7 @@ public class EmployeeController {
 
 		// add to the spring model
 		theModel.addAttribute("employees", theEmployees);
-		theModel.addAttribute("nearbyMonths", nearbyMonths);
+		theModel.addAttribute("nearbyMonths", strNearbyMonths);
 		return "employees/list-employees";
 	}
 

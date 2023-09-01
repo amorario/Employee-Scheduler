@@ -22,30 +22,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("employees/shifts")
 public class ShiftController {
 
-	private static List<Integer> nearbyMonths;
-	static {
-		LocalDate prior2, prior1, current, next1, next2, next3;		// previous 2 months, current month, and the next 3 months
-		int currentMonth = LocalDate.now().getMonthValue();
-		int currentYear = LocalDate.now().getYear();
-		current = LocalDate.of(currentYear, currentMonth, 1);
-		prior2 = current.minusMonths(2);
-		prior1 = current.minusMonths(1);
-		next1 = current.plusMonths(1);
-		next2 = current.plusMonths(2);
-		next3 = current.plusMonths(3);
-		nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
-				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
-	}
-/*
-	List<String> strNearbyMonths = new ArrayList<>();
- 	current = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), 1);
-        current = current.minusMonths(2);
-	for (int i = 0; i < 6 ; i++) {
-            strNearbyMonths.add(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US) + " "+ current.getYear());
-            //System.out.println(current.getMonth().getDisplayName(TextStyle.FULL_STANDALONE,Locale.US));
-            current = current.plusMonths(1);
-        }
-*/
 	private ShiftService shiftService;
 
 	public ShiftController(ShiftService theShiftService) {
@@ -147,13 +123,17 @@ public class ShiftController {
 		return listShifts(theId, theModel);
 	}
 
-	@PostMapping("/viewMonthlyShifts")
+
+	/*
+	@GetMapping("/viewMonthlyShifts")
 	public String viewMonthlyShifts(@ModelAttribute("month") @Validated @RequestBody int theMonth, Model theModel) {
 		Month m = Month.of(theMonth);
 
 		//theModel.addAttribute("shifts", monthlyShifts);
 		return "employees/shifts/list-monthly-shifts";
 	}
+
+	*/
 
 	@PostMapping("/generateMonthlyShifts")
 	public String generateMonthlyShifts(@ModelAttribute("month") @Validated @RequestBody int theMonth, Model theModel) {
@@ -205,28 +185,14 @@ public class ShiftController {
 	}
 
 	@GetMapping("/viewMonth")
-	public String getNearbyMonths(Model model) {
-		LocalDate prior2, prior1, current, next1, next2, next3;		// previous 2 months, current month, and the next 3 months
-		int currentMonth = LocalDate.now().getMonthValue();
-		int currentYear = LocalDate.now().getYear();
-		current = LocalDate.of(currentYear, currentMonth, 1);
-		prior2 = current.minusMonths(2);
-		prior1 = current.minusMonths(1);
-		next1 = current.plusMonths(1);
-		next2 = current.plusMonths(2);
-		next3 = current.plusMonths(3);
-		List<Integer> nearbyMonths = new ArrayList<>(Arrays.asList(prior2.getMonthValue(), prior1.getMonthValue(),
-				current.getMonthValue(), next1.getMonthValue(), next2.getMonthValue(), next3.getMonthValue()));
+	public String viewMonth(@ModelAttribute("month") @Validated @RequestBody String theMonth, Model theModel) {
+		String[] splitStr = theMonth.split("\\s+");
+		Month m = Month.valueOf(splitStr[0].toUpperCase());
+		int year = Integer.parseInt(splitStr[1]);
+		//System.out.println("In viewMonth() and the month chosen is " + m+ " and the year is " + year);
 
-		model.addAttribute("nearbyMonths", nearbyMonths);
+		List<Shift> monthlyShifts = shiftService.getMonthlyShifts(m.getValue(), year);
+		theModel.addAttribute("shifts", monthlyShifts);
 		return "employees/shifts/list-monthly-shifts";
 	}
 }
-
-
-
-
-
-
-
-
