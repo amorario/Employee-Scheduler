@@ -1,5 +1,6 @@
 package com.luv2code.springboot.thymeleafdemo.service;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,8 +49,7 @@ public class ShiftServiceImpl implements ShiftService {
 
 		if (result.isPresent()) {
 			theShift = result.get();
-		}
-		else {
+		} else {
 			// we didn't find the shift
 			throw new RuntimeException("Did not find shift id - " + theId);
 		}
@@ -87,74 +87,113 @@ public class ShiftServiceImpl implements ShiftService {
 		return monthlyShifts;
 	}
 
-	@Override												// save a list of UNASSIGNED shifts
+	@Override                                                // save a list of UNASSIGNED shifts
 	public void saveMonthlyShifts(List<Shift> shiftList) {
 		for (Shift s : shiftList)
 			shiftRepository.save(s);
 	}
 
-	public void assignShiftsToEmployees(List<Shift> shiftList) {			// shiftList is a generated shift list WITHOUT employees
+	public void assignShiftsToEmployees(List<Shift> shiftList) {            // shiftList is a generated shift list WITHOUT employees
 
 		List<Employee> employeeList = employeeRepository.findAllByOrderByLastNameAsc();
 		Collections.shuffle(employeeList);
 		int stretch, stretchNum = 0;
-
-		int previousMonth = shiftList.get(0).getDate().minusMonths(1L).getMonthValue();
-		int previousYear = shiftList.get(0).getDate().minusMonths(1L).getYear();
-		if ((previousMonth == 2) || (previousMonth == 4) || (previousMonth == 6) || (previousMonth == 9) || (previousMonth == 11))	{
-			// need 2 months prior to current month
-			previousMonth = shiftList.get(0).getDate().minusMonths(2L).getMonthValue();
-			previousYear = shiftList.get(0).getDate().minusMonths(2L).getYear();
+        /*  Shifts: 1 of 4 amounts of shifts are generated-
+        1. 30 days * 4 shifts/day = 120 shifts, 120/8 = 15 shifts/employee; stretches = 7,8 each
+        2. 31 days * 4 shifts/day = 124 shifts, 124/8 = 15 shifts for 4 employees, 16 for the rest; stretches = 7,8 for 4 employees, 8,8 for the rest
+        3. 28 days * 4 shifts/day = 112 shifts, 112/8 = 14 shifts/employee; stretches = 7,7 each
+        4. 29 days * 4 shifts/day = 116 shifts, 116/8 = 14 shifts for 4 employees, 15 for the rest; stretches = 7,7 for 4 employees, 7,8 for the rest
+		*/
+		boolean oddMonth = false;
+		List<Shift> previousShifts = null;
+		if (shiftList.size() == 116 || shiftList.size() == 124) {
+			oddMonth = true;
+			int previousMonth = shiftList.get(0).getDate().minusMonths(2L).getMonthValue();        // WRONG - previous odd month CAN BE minus 1 month
+			int previousYear = shiftList.get(0).getDate().minusMonths(2L).getYear();
+			previousShifts = getMonthlyShifts(previousMonth, previousYear);        // list of shifts of month that had odd # of days
 		}
 
-		List<Shift> previousShifts = getMonthlyShifts(previousMonth, previousYear);		// list of shifts of month that had odd # of days
-		int monthLength = shiftList.get(0).getDate().lengthOfMonth();		// current month length
-		int [] stretches = new int[3];
-
+		int monthLength = shiftList.get(0).getDate().lengthOfMonth();        // current month length
+		int [] e1Stretches, e2Stretches = new int[3];
 		for (Employee e : employeeList) {
-			if ((monthLength == 30) || (monthLength == 28))
-				stretches = generateStretches(shiftList.size()/8);
-			else if(e.getShiftsAmount(previousShifts) == 16) {				// # of previous shifts from last odd # days (31 or 29) month
-				stretches = generateStretches(15);						// Employee e did more shifts the last odd #'d month
-			} else
-				stretches = generateStretches(16);						// Employee e did less shifts the last odd #'d month
+			e.setMonthSet(false);
+		}
 
-			// Employee e, stretches [x,y,0], current/unassigned shiftList
-			stretch = 0;
-			for (int i = 0; i <= shiftList.size()-1 ;) {
-				if (shiftList.get(i).getEmployee() != null)					// on to the next shift if this one is already assigned
-					continue;
-				stretch = stretch + stretches[stretchNum];
+		int iter = 0;
+		while (!checkIfAllSet(employeeList)) {
+			int start = iter;
+			Employee e1 = employeeList.get(iter);
+			while (e1.isMonthSet()) {
+				e1 = employeeList.get(iter++);
+				start = iter;
+			}
+			Employee e2 = employeeList.get(iter++);
+			while (e2.isMonthSet() || (oddMonth && (e1.getShiftsAmount(previousShifts) == e2.getShiftsAmount(previousShifts)))) {
+				e2 = employeeList.get(iter++);
+			}
+
+			int e1ShiftsAmount = shiftList.size() / 8;
+			if (oddMonth && (e1.getShiftsAmount(previousShifts) != 16 || (previousShifts.size() == 116 && e1.getShiftsAmount(previousShifts) != 15))) {
+				e1ShiftsAmount++;       // Employee e1 did LESS shifts the last odd #'d month
+			}
+			e1Stretches = generateStretches(e1ShiftsAmount);
+			e2Stretches = generateStretches(monthLength - e1ShiftsAmount);
+
+			// Employee e1 and e2, e1 and e2 respective stretches [x,y,0], current/unassigned shiftList
+			int prevStretch = checkShiftsInPriorMonth(e1.getId(), shiftList.get(0).getDate());        // e1's current stretch from last month
+			stretch = 8-prevStretch;									// TODO- set to random int from 3-8
+			if (stretch < e1Stretches[0])
+				e1Stretches[0] = stretch;
+			e1Stretches[2] = e1ShiftsAmount - (e1Stretches[0] + e1Stretches[1]);
+			Employee e = e1;
+			int i = 0;
+			while (!e1.isMonthSet() && !e2.isMonthSet()) {
+				
+				while (shiftList.get(i).getEmployee() != null) {                   // on to the next shift if this one is already assigned
+					i++;
+				}
+				
 				while (stretch > 0) {
 					shiftList.get(i).setEmployee(e);
 					if (!(shiftList.get(i).getCall().equals("LATE")))
-						i += 4;										// get to the next day's shifts, unless its LATE call
-
+						i += 4;                                        // get to the next day's shifts, unless its LATE call
 					i++;
 					stretch--;
-
 					if (shiftList.get(i).getEmployee() != null)
 						break;
 				}
-				i = i + 28;										// 7 days later...
-				stretchNum++;
+				if (e.equals(e1)) {
+					e = e2;
+					stretch = e2Stretches[stretchNum];
+				}
+				else {
+					e = e1;
+					stretchNum++;
+					stretch = e1Stretches[stretchNum];
+				}
+				// stretch =
+
 			}
 
 		}
 
 	}
-	/*  Shifts: 1 of 4 amounts of shifts are generated-
-		1. 30 days * 4 shifts/day = 120 shifts, 120/8 = 15 shifts/employee; stretches = 7,8 each
-		2. 31 days * 4 shifts/day = 124 shifts, 124/8 = 15 shifts for 4 employees, 16 for the rest; stretches = 7,8 for 4 employees, 8,8 for the rest
-		3. 28 days * 4 shifts/day = 112 shifts, 112/8 = 14 shifts/employee; stretches = 7,7 each
-		4. 29 days * 4 shifts/day = 116 shifts, 116/8 = 14 shifts for 4 employees, 15 for the rest; stretches = 7,7 for 4 employees, 7,8 for the rest
-*/
+
+	private boolean checkIfAllSet(List<Employee> employeeList) {
+		for (Employee e : employeeList) {
+			if (!e.isMonthSet())
+				return false;
+		}
+		return true;
+	}
+
+
 	public int[] generateStretches(int shiftsAmount) {
-		int [] stretches = new int[3];			// only 2-3 stretches per month
-		stretches[2] = 0;						// for now, only 2 stretches allowed
+		int [] stretches = new int[3];            // only 2-3 stretches per month
+		stretches[2] = 0;                        // for now, only 2 stretches allowed
 		if (shiftsAmount == 15)
 			stretches[0] = (Math.random() < .5) ? 7 : 8;
-		else								// shiftsAmount = 16
+		else                                // shiftsAmount = 16
 			stretches[0] = 8;
 		stretches[1] = shiftsAmount - stretches[0];
 		return stretches;
@@ -168,22 +207,29 @@ public class ShiftServiceImpl implements ShiftService {
 		return false;
 	}
 
-	private static int checkShiftsInPriorMonth (int id, LocalDate firstOfMonth) {
-	  // send user id and month to service method and return number of shifts worked in  last 8 days prior to start of next month
-	  // List<Shift> monthlyShifts = shiftService.getMonthlyShifts(currentMonth.getMonth().getValue(), currentMonth.getYear());
-	  int stretch;
-	  LocalDate minus8Days = firstOfMonth.minusDays(8);
-	  
-	  for (Shift s : this.findAll()) {
-	    if (s.getDate().
-	    
-	  }
-	  
-	  
-	  
-	  
-	}
+	private int checkShiftsInPriorMonth(int id, LocalDate firstOfMonth) {
+		// send user id and date to service method and return number of shifts worked in last 8 days prior to start of next month
+		int stretch = 0;
+		int idFound = 0;
+		Shift shiftFound = null;
+		LocalDate minus8Days = firstOfMonth.minusDays(8);
 
+		for (Shift s : this.findAll()) {                // go through all until shift w/ target date is found
+			if (s.getDate().isEqual(minus8Days)) {
+				shiftFound = s;
+				idFound = shiftFound.getId();
+				break;
+			}
+		}
+		for (int i = 0 ; i <32 ; i++) {                // cycle through the next 8 days worth of shifts
+			if (shiftFound.getEmployee().getId() == id) {
+				stretch++;
+			}
+			shiftFound = findById(idFound + i);
+		}
+
+		return stretch;
+	}
 }
 
 
