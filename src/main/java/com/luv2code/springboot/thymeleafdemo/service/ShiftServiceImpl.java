@@ -169,9 +169,14 @@ public class ShiftServiceImpl implements ShiftService {
 				else {
 					e = e1;
 					stretchNum++;
-					stretch = e1Stretches[stretchNum];
+					if (stretchNum == 3) {
+					  e1.setMonthSet(true);
+					  e2.setMonthSet(true);
+					}
+					else 
+					  stretch = e1Stretches[stretchNum];
 				}
-				// stretch =
+				
 
 			}
 
