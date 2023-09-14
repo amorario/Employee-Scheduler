@@ -108,13 +108,17 @@ public class ShiftServiceImpl implements ShiftService {
         3. 28 days * 4 shifts/day = 112 shifts, 112/8 = 14 shifts/employee; stretches = 7,7 each
         4. 29 days * 4 shifts/day = 116 shifts, 116/8 = 14 shifts for 4 employees, 15 for the rest; stretches = 7,7 for 4 employees, 7,8 for the rest
         */
-        boolean oddMonth = false;
+        boolean oddMonth =  ((shiftList.size() % 8) == 4) ? true : false;
         List<Shift> previousShifts = null;
-        if (shiftList.size() == 116 || shiftList.size() == 124) {                                   // month has odd # of days
-            oddMonth = true;
-            int previousMonth = shiftList.get(0).getDate().minusMonths(1L).getMonthValue();        // WRONG - previous odd month CAN BE minus 1 month
+        if (oddMonth) {
+            int previousMonth = shiftList.get(0).getDate().minusMonths(1L).getMonthValue();
             int previousYear = shiftList.get(0).getDate().minusMonths(1L).getYear();
-            //previousShifts = getMonthlyShifts(previousMonth, previousYear);        // list of shifts of month that had odd # of days
+            previousShifts = getMonthlyShifts(previousMonth, previousYear);        // list of shifts of month that had odd # of days
+            if ((previousShifts.size() % 8) == 0) {
+                previousMonth = shiftList.get(0).getDate().minusMonths(2L).getMonthValue();
+                previousYear = shiftList.get(0).getDate().minusMonths(2L).getYear();
+                previousShifts = getMonthlyShifts(previousMonth, previousYear);
+            }
         }
 
         int monthLength = shiftList.get(0).getDate().lengthOfMonth();        // current month length
