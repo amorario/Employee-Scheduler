@@ -163,7 +163,7 @@ public class ShiftServiceImpl implements ShiftService {
                 //System.out.println("prevStretch = " + prevStretch);
             }
             if (prevStretch == 0)
-                prevStretch = (int) ((Math.random() * (8 - 3)) + 3);
+                prevStretch = (int) ((Math.random() * (4 - 3)) + 3);
             //int prevStretch = checkShiftsInPriorMonth(e1.getId(), shiftList.get(0).getDate());        // e1's current stretch from last month
             
             
