@@ -159,26 +159,33 @@ public class ShiftServiceImpl implements ShiftService {
             int prevStretch = 0;
             if (lastMonthsList.get(0).getEmployee() != null) {
                 prevStretch = checkShiftsInPriorMonth(e1.getId(), shiftList.get(0).getDate(), lastMonthsList);
-                
-                //System.out.println("prevStretch = " + prevStretch);
-            }
-            if (prevStretch == 0)
-                prevStretch = (int) ((Math.random() * (4 - 3)) + 3);
-            //int prevStretch = checkShiftsInPriorMonth(e1.getId(), shiftList.get(0).getDate());        // e1's current stretch from last month
-            
-            
-            int max = e1Stretches[0]-prevStretch;
-            stretch = (int) ((Math.random() * (max - 3)) + 3);
-            if (stretch < e1Stretches[0])
+                stretch = e1Stretches[0]-prevStretch;
+                if (stretch < 0)
+                    stretch = 0;
                 e1Stretches[0] = stretch;
+            //System.out.println("prevStretch = " + prevStretch);
+            }
+            else {
+                //if (prevStretch == 0)
+                prevStretch = (int) ((Math.random() * (5 - 3)) + 3);
+                stretch = e1Stretches[0]-prevStretch;
+                //int max = e1Stretches[0]-prevStretch;
+                //stretch = (int) ((Math.random() * (max - 3)) + 3);
+                if (stretch < 3)
+                    stretch += 2;
+                e1Stretches[0] = (Math.random() < .40) ? stretch : e1Stretches[0]; 
+            }
+            
             e1Stretches[2] = e1ShiftsAmount - (e1Stretches[0] + e1Stretches[1]);        //15 - (7 + 8) = 0
             
-            
-            System.out.println("E1 stretches generated: " + e1Stretches[0] + " " +e1Stretches[1] + " " +e1Stretches[2]);
-            System.out.println("E2 stretches generated: " + e2Stretches[0] + " " +e2Stretches[1] + " " +e2Stretches[2]);
+            /*System.out.print("E1 stretches generated: " + e1Stretches[0] + " " +e1Stretches[1] + " " +e1Stretches[2]);
+            System.out.println(", E2 stretches generated: " + e2Stretches[0] + " " +e2Stretches[1] + " " +e2Stretches[2]);
+            System.out.print("E1 assignment: " + e1.getLastName() + " " +e1.getFirstName());
+            System.out.println(", E2 assignment: " + e2.getLastName() + " " +e2.getFirstName() + "\n");*/
             
             Employee e = e1;
             int i = 0;
+            stretch = e1Stretches[0];
             while (!e1.isMonthSet() && !e2.isMonthSet()) {
                 
                 while (i < shiftList.size() && shiftList.get(i).getEmployee() != null) {                   // on to the next shift if this one is already assigned
