@@ -24,28 +24,6 @@
 	   class="btn btn-primary btn-sm mb-3">
 		Add Employee
 	</a>
-	<form action="#" th:action="@{/employees/shifts/generateMonthlyShifts}" method="post">
-		<label path = "month">Month
-			<select style="width: 115px;" class="form-control" id="month" name="month">
-				<option th:value = 1>JANUARY</option>
-				<option th:value = 2>FEBRUARY</option>
-				<option th:value = 3>MARCH</option>
-				<option th:value = 4>APRIL</option>
-				<option th:value = 5>MAY</option>
-				<option th:value = 6>JUNE</option>
-				<option th:value = 7>JULY</option>
-				<option th:value = 8>AUGUST</option>
-				<option th:value = 9>SEPTEMBER</option>
-				<option th:value = 10>OCTOBER</option>
-				<option th:value = 11>NOVEMBER</option>
-				<option th:value = 12>DECEMBER</option>
-			</select>
-		</label>
-		<td colspan = "1">
-			<input type = "submit" value = "Generate Monthly Schedule"/>
-		</td>
-	</form>
-
 
 	<form action="#" th:action="@{/employees/shifts/viewMonth}">
 

@@ -29,9 +29,50 @@ public class Employee {
                     CascadeType.DETACH, CascadeType.REFRESH})
     private List<Shift> shifts;
 
-      /*DateFormatSymbols syms = new DateFormatSymbols(new Locale ("en","US"));
-      DateFormat output = new SimpleDateFormat("MM-dd-yyyy", syms);
-      //DateFormat output = new SimpleDateFormat("EEE MMMMM dd, YYYY 'at' hh:mm aaa", syms);*/
+
+    @Column(name="month_set")
+    private boolean monthSet;
+
+
+    @Column(name="shifts_amount")
+    private int shiftsAmount;
+
+    @Column(name="days_off")
+    private String daysOff;
+
+    @Column(name="weekends")
+    private int weekends;
+
+    public String getDaysOff() {
+        return daysOff;
+    }
+
+    public void setDaysOff(String daysOff) {
+        this.daysOff = daysOff;
+    }
+
+    public int getWeekends() {
+        return weekends;
+    }
+
+    public void setWeekends(int weekends) {
+        this.weekends = weekends;
+    }
+
+    public int getShiftsAmount() {
+        return shiftsAmount;
+    }
+
+    public void setShiftsAmount(int shiftsAmount) {
+        this.shiftsAmount = shiftsAmount;
+    }
+    public boolean isMonthSet() {
+        return monthSet;
+    }
+
+    public void setMonthSet(boolean monthSet) {
+        this.monthSet = monthSet;
+    }
 
     public Employee () {
     }
@@ -45,6 +86,7 @@ public class Employee {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -80,7 +122,8 @@ public class Employee {
                 "id=" + id +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
+                ", daysOff='" + daysOff + '\'' +
+                ", shifts total='" + shiftsAmount + '\'' +
                 '}';
     }
 
@@ -103,6 +146,19 @@ public class Employee {
             }
         }
         return count;
+    }
+
+    public List<Integer> getDaysOffIntList() {
+        List<Integer> list = new ArrayList<>();
+        if (daysOff == null)
+            return null;
+        String[] daysOffString = daysOff.split("\\s+");
+        for (String dayStr : daysOffString) {
+            if (dayStr == null)
+                return list;
+            list.add(Integer.parseInt(dayStr));
+        }
+        return list;
     }
 
 }

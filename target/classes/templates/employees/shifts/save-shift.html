@@ -21,7 +21,7 @@
 
         <p class="h4 mb-4">Save Shift</p>
 
-        <form action="#" th:action="@{/employees/shifts/saveShift(employeeId=${shift.employee.id})}"
+        <form action="#" th:action="@{/employees/shifts/saveShift}"
                          th:object="${shift}" method="POST">
 
             <!-- Add hidden form field to handle update -->
@@ -33,12 +33,21 @@
             <input type="text" th:field="*{date}"
                    class="form-control mb-4 w-25" placeholder="Scheduled date">
 
+            <select th:field="*{employee}" style="width: 115px;" class="form-control" id="employee" name="employeeId">
+                <option value="">Select employee</option>
+                <option
+                        th:each="employee : ${employeeList}"
+                        th:value="${employee.id}"
+                        th:text="${employee.lastName}">
+                </option>
+            </select>
 
             <button type="submit" class="btn btn-info col-2">Save</button>
 
         </form>
         <hr>
-        <a th:href="@{/employees/shifts-list(employeeId=${shift.employee.id})}">Back to Shift List</a>
+
+        <a th:href="@{/employees/shifts/viewMonth(month=${month})}" >Back to Shift List </a>
     </div>
 
 

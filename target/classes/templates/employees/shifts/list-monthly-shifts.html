@@ -16,14 +16,27 @@
 
 <div class="container">
 
-	<h3>Monthly Shift List</h3>
+	<h3>Monthly Shift List - <a th:text="${month}"/></h3>
 	<hr>
+
+	<a th:href="@{/employees/shifts/generateMonthlyShifts(month=${month})}"
+	   class="btn btn-primary btn-sm mb-3">
+		Generate/Clear Shifts
+	</a>
+
+	<a th:href="@{/employees/shifts/assign(month=${month})}"
+		class="btn btn-primary btn-sm mb-3">
+		Assign
+	</a>
+
+	<a th:href="@{/employees/list}">Back to Employees List</a>
 
 	<table class="table table-bordered table-striped">
 		<thead class="table-dark">
 			<tr>
 				<th>Call</th>
 				<th>Date</th>
+				<th>Employee</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -33,6 +46,7 @@
 			
 				<td th:text="${tempShift.call}" />
 				<td th:text="${tempShift.date}" />
+				<td th:text="${tempShift.employee != null} ? ${tempShift.employee.id + ' - ' + tempShift.employee.firstName + ' ' + tempShift.employee.lastName} : 'Unassigned!'"/>
 
 				<!-- Add update button/link -->
 				<td>
@@ -54,7 +68,7 @@
 	</table>
 
 	<hr>
-	<a th:href="@{/employees/list}">Back to Employees List</a>
+
 	
 </div>
 	

@@ -88,7 +88,7 @@ public class Shift {
                 ", call= " + call +
             //", date= " + output.format(date) +
             ", date= " + date.format(DateTimeFormatter.ofPattern("MM-dd-yyyy")) +
-            ", employeeId= " + employee.getId() +
+            //", employeeId= " + employee.getId() +
                 '}';
       }
 }

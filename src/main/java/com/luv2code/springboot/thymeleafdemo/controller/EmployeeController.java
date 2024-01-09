@@ -117,7 +117,7 @@ public class EmployeeController {
 
 	@GetMapping("/shifts-list")
 	public String listShifts(@RequestParam("employeeId") int theId,
-								Model theModel) {
+							 Model theModel) {
 
 		// get the employee from the service
 		Employee theEmployee = employeeService.findById(theId);
@@ -131,12 +131,3 @@ public class EmployeeController {
 	}
 
 }
-
-
-
-
-
-
-
-
-
