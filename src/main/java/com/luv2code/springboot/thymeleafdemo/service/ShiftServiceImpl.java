@@ -1053,7 +1053,49 @@ public class ShiftServiceImpl implements ShiftService {
 		return (double) e.getShiftsAmount() / (monthLength - e.getDaysOffIntList().size());
 	}
 
+	public static int getPriorMonthsShifts(Employee e, LocalDate firstOfMonth) {
+        // send user id and date to service method and return number of shifts worked in last 8 days prior to start of next month
+        List<Shift> lastMonthsList = getLastMonthsList(firstOfMonth);
+        if (lastMonthsList.isEmpty())
+            return 0;
+        
+        int daysOn = 0, shiftsOff = 0;
+        int idFound = 0;
+        Shift shiftFound = null;
+        LocalDate minus8Days = firstOfMonth.minusDays(8);
 
+        for (Shift s : lastMonthsList) {                // go through all until shift w/ target date is found
+        //System.out.println(s);
+            if (s.getDate().isEqual(minus8Days)) {
+                shiftFound = s;
+                idFound = shiftFound.getId();
+                break;
+            }
+        }
+        //int shiftsToCheck = lastMonthsList.size() - idFound;
+	int shiftsToCheck = 32;
+        //System.out.println("Shift found: " + shiftFound + "; amount to check = " + shiftsToCheck + ", ID to check " + id);
+        for (int i = 1 ; i <= shiftsToCheck ; i++) {                // cycle through the next 8 days worth of shifts
+            //System.out.println("Employee ID found: " + shiftFound);
+            if (shiftFound.getEmployee().getId() == e.getId()) {
+                daysOn++;
+                if (!(shiftFound.getCall().equals("LATE"))) 
+                    i+=4;
+                shiftsOff = 0;
+            }
+            else {
+                shiftsOff++;
+                if (daysOn > 0)
+                    shiftsOff += 4;
+                daysOn = 0;
+            }
+            //System.out.println("ID found - " + shiftFound.getEmployee().getId() + ", stretch =  " + daysOn + " or days off = " + (shiftsOff/4) + ", i = " + i );
+            if (i < shiftsToCheck)
+                shiftFound = lastMonthsList.get(idFound+i);
+        }
+
+        return daysOn;
+    }
 
 }
 
