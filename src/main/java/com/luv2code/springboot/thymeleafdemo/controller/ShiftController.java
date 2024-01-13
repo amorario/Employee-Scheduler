@@ -77,6 +77,25 @@ public class ShiftController {
 		return "employees/shifts/save-shift";
 	}
 
+	@GetMapping("/showAssignmentForm")
+	public String showAssignmentForm(@ModelAttribute("month") String theMonth, Model theModel) {
+
+		System.out.println("Inside method for showAssignmentForm");
+
+		// get the employee list from the service
+		List<Employee> employeeList = shiftService.findAllEmployees();
+
+		// set shift as a model attribute to pre-populate the form
+		theModel.addAttribute("employeeList", employeeList);
+
+		System.out.println("the month redirecting to " + theMonth);
+
+		theModel.addAttribute("month", theMonth);
+
+		// send over to our form
+		return "employees/shifts/assignment-form";
+	}
+
 	@GetMapping("/deleteShift")
 	public String delete(@RequestParam("shiftId") int theId) {
 
@@ -118,12 +137,15 @@ public class ShiftController {
 		return "redirect:/employees/shifts/viewMonth?month=" + theMonth;
 	}
 
-	@GetMapping("/assign")
+	@PostMapping("/assign")
 	public String assign(@ModelAttribute("month") String theMonth, Model theModel) {
 		String[] splitStr = theMonth.split("\\s+");
 		Month m = Month.valueOf(splitStr[0].toUpperCase());
 		int year = Integer.parseInt(splitStr[1]);
 		List<Shift> monthlyShifts = shiftService.getMonthlyShifts(m.getValue(), year);
+
+
+
 		if (!shiftService.isUnassigned(monthlyShifts))
 			shiftService.clearMonthlyShifts(monthlyShifts);
 		shiftService.assignShiftsToEmployees(monthlyShifts);

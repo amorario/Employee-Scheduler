@@ -14,47 +14,48 @@
 
 <body>
 
-    <div class="container">
+<div class="container">
 
-        <h3>Shift Assignment for <a th:text="${month}"/></h3>
-        <hr>
+    <h3>Shift Assignment for <a th:text="${month}"/></h3>
+    <hr>
 
-        <p class="h4 mb-4">Setup</p>
+    <p class="h4 mb-4">Setup</p>
 
-        	<form action="#" th:action="@{/employees/shifts/assign(month=${month})}" th:object="${employeeList}"
-  			method="post">
-    		<fieldset>
-        		<input type="submit" id="submitButton" th:value="Save">
-        		<input type="reset" id="resetButton" name="reset" th:value="Reset"/>
+    <form action="#" th:action="@{/employees/shifts/assign(month=${month})}" th:object="${employeeList}"
+          method="post">
+        <fieldset>
+            <input type="submit" id="submitButton" th:value="Save">
+            <input type="reset" id="resetButton" name="reset" th:value="Reset"/>
 
-        		<table>
-            			<thead>
-                    			<th> Name </th>
-                    			<th> Amount of Shifts </th>
-                    			<th> Days Off Requested </th>
-            			</thead>
+            <table>
+                <thead>
+                <th> </th>
+                <th> Name </th>
+                <th> Amount of Shifts </th>
+                <th> Days Off Requested </th>
+                </thead>
 
-				<tbody>
-					<tr th:each="employee, itemStat : ${employeeList}">
-						<td><input hidden th:name="|employeeList[${itemStat.index}].id|" th:value="${employee.getId()}"/></td>
+                <tbody>
+                <tr th:each="employee : ${employeeList}">
+                    <td><input hidden th:name="${employee.id}" th:value="${employee.getId()}"/></td>
 
-						<td th:text="${employee.firstName + ' ' + employee.lastName}"/>
+                    <td th:text="${employee.firstName + ' ' + employee.lastName}"/>
 
-						<td><input th:placeholder="Shifts to Work + ' ' + ${itemStat.count}" th:name="|employeeList[${itemStat.index}].shiftsAmount|" th:value="${employee.getShiftsAmount()}"
-									   required/></td>
+                    <td><input th:name="${employee.shiftsAmount}" th:value="${employee.getShiftsAmount()}"
+                               required/></td>
 
-						<td><input th:placeholder="Requested Days Off + ' ' + ${itemStat.count}" th:name="|employeeList[${itemStat.index}].daysOff|"
-									   th:value="${employee.getDaysOff()}" required/></td>
-					</tr>
-				</tbody>
+                    <td><input th:name="${employee.daysOff}"
+                               th:value="${employee.getDaysOff()}" required/></td>
+                </tr>
+                </tbody>
 
-        		</table>
-    		</fieldset>
-		</form>
-        <hr>
+            </table>
+        </fieldset>
+    </form>
+    <hr>
 
-        <a th:href="@{/employees/shifts/viewMonth(month=${month})}" >Back to Shift List </a>
-    </div>
+    <a th:href="@{/employees/shifts/viewMonth(month=${month})}" >Back to Shift List </a>
+</div>
 
 
 </body>
