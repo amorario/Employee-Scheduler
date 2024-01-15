@@ -177,6 +177,7 @@ public class ShiftServiceImpl implements ShiftService {
 			e.setWeekends(0);
 		}
 
+		/*
 		List<Integer> set = new ArrayList<>(Arrays.asList( 16, 16, 7, 18, 3, 18, 13, 16, 17 ));           // 16, 16, 7, 18, 3, 18, 13, 16, 17
 		//int monthLength = (intListSum (set) )/ 4;
 
@@ -195,7 +196,7 @@ public class ShiftServiceImpl implements ShiftService {
 		for (int i = 0; i <9 ; i++) {
 			employeeListOriginal.get(i).setShiftsAmount(set.get(i));
 			employeeListOriginal.get(i).setDaysOff(groupDaysOff.get(i));
-		}
+		}*/
 
 
 		List<Employee> employeeList = new ArrayList<>(employeeListOriginal);
@@ -418,6 +419,19 @@ public class ShiftServiceImpl implements ShiftService {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void updateEmployeeList(List<Employee> wrapperList) {
+		List<Employee> employeeList = employeeRepository.findAll();
+		for (int i = 0 ; i < wrapperList.size() ; i++) {
+			employeeList.get(i).setShiftsAmount(wrapperList.get(i).getShiftsAmount());
+			employeeList.get(i).setDaysOff(wrapperList.get(i).getDaysOff());
+		}
+		employeeRepository.saveAll(employeeList);
+
+		for (Employee e : employeeRepository.findAll())
+			System.out.println(e);
 	}
 
 

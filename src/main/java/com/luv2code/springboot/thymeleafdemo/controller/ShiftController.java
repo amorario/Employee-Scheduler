@@ -9,6 +9,7 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 
 import com.luv2code.springboot.thymeleafdemo.entity.Employee;
+import com.luv2code.springboot.thymeleafdemo.entity.EmployeeListWrapper;
 import com.luv2code.springboot.thymeleafdemo.entity.Shift;
 import com.luv2code.springboot.thymeleafdemo.service.EmployeeService;
 import com.luv2code.springboot.thymeleafdemo.service.ShiftService;
@@ -83,10 +84,11 @@ public class ShiftController {
 		System.out.println("Inside method for showAssignmentForm");
 
 		// get the employee list from the service
-		List<Employee> employeeList = shiftService.findAllEmployees();
+		EmployeeListWrapper wrapper = new EmployeeListWrapper();
+		wrapper.setEmployeeList(shiftService.findAllEmployees());
 
 		// set shift as a model attribute to pre-populate the form
-		theModel.addAttribute("employeeList", employeeList);
+		theModel.addAttribute("wrapper", wrapper);
 
 		System.out.println("the month redirecting to " + theMonth);
 
@@ -111,7 +113,7 @@ public class ShiftController {
 
 	@PostMapping("/saveShiftWithEmployee")
 	public String saveShiftWithEmployee(@RequestParam("employeeId") int theId,
-							@ModelAttribute("shift") Shift theShift, Model theModel) {
+										@ModelAttribute("shift") Shift theShift, Model theModel) {
 
 		// save the shift
 		shiftService.saveWithEmployee(theShift, theId);
@@ -138,16 +140,21 @@ public class ShiftController {
 	}
 
 	@PostMapping("/assign")
-	public String assign(@ModelAttribute("month") String theMonth, Model theModel) {
+	public String assign(@ModelAttribute("month") String theMonth, @ModelAttribute("wrapper") EmployeeListWrapper wrapper, Model theModel) {
 		String[] splitStr = theMonth.split("\\s+");
 		Month m = Month.valueOf(splitStr[0].toUpperCase());
 		int year = Integer.parseInt(splitStr[1]);
 		List<Shift> monthlyShifts = shiftService.getMonthlyShifts(m.getValue(), year);
 
+		//System.out.println(wrapper.getEmployeeList() != null ? wrapper.getEmployeeList().size() : "null list");
 
+		//for (Employee e : wrapper.getEmployeeList())
+			//System.out.println(e);
 
-		if (!shiftService.isUnassigned(monthlyShifts))
-			shiftService.clearMonthlyShifts(monthlyShifts);
+		shiftService.updateEmployeeList(wrapper.getEmployeeList());
+
+			if (!shiftService.isUnassigned(monthlyShifts))
+				shiftService.clearMonthlyShifts(monthlyShifts);
 		shiftService.assignShiftsToEmployees(monthlyShifts);
 
 		for (Shift s : monthlyShifts) {
@@ -176,8 +183,7 @@ public class ShiftController {
 			for (Shift s : monthlyShifts) {
 				s.setEmployee(null);
 			}
-		}
-		else {
+		} else {
 			monthlyShifts = new ArrayList<>();
 			LocalDate nextMonth = date.plusMonths(1);
 			for (; date.isBefore(nextMonth); date = date.plusDays(1)) {

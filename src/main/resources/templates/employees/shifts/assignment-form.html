@@ -21,7 +21,7 @@
 
     <p class="h4 mb-4">Setup</p>
 
-    <form action="#" th:action="@{/employees/shifts/assign(month=${month})}" th:object="${employeeList}"
+    <form action="#" th:action="@{/employees/shifts/assign(month=${month})}" th:object="${wrapper}"
           method="post">
         <fieldset>
             <input type="submit" id="submitButton" th:value="Save">
@@ -36,15 +36,19 @@
                 </thead>
 
                 <tbody>
-                <tr th:each="employee : ${employeeList}">
-                    <td><input hidden th:name="${employee.id}" th:value="${employee.getId()}"/></td>
+                <tr th:each="employee, stat : ${wrapper.employeeList}">
+                    <td><input hidden th:name="${employee.id}"
+                               th:field="*{employeeList[__${stat.index}__].id}"
+                               th:value="${employee.getId()}"/></td>
 
                     <td th:text="${employee.firstName + ' ' + employee.lastName}"/>
 
-                    <td><input th:name="${employee.shiftsAmount}" th:value="${employee.getShiftsAmount()}"
-                               required/></td>
+                    <td><input th:name="${employee.shiftsAmount}"
+                               th:field="*{employeeList[__${stat.index}__].shiftsAmount}"
+                               th:value="${employee.getShiftsAmount()}" required/></td>
 
                     <td><input th:name="${employee.daysOff}"
+                               th:field="*{employeeList[__${stat.index}__].daysOff}"
                                th:value="${employee.getDaysOff()}" required/></td>
                 </tr>
                 </tbody>
