@@ -39,14 +39,15 @@ CREATE TABLE `shift` (
 SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT INTO `employee` VALUES 
-	(1,'Joe','Burrow', 'jburrow@nfl.com', 0, 0, 0, ''),
-	(2,'Jamarr','Chase', 'jchase@nfl.com', 0, 0, 0, ''),
-	(3,'Josh','Jacobs', 'jjacobs@nfl.com', 0, 0, 0, ''),
-	(4,'Damien','Pierce', 'dpierce@nfl.com', 0, 0, 0, ''),
-	(5,'Justin','Jefferson', 'jjefferson@nfl.com', 0, 0, 0, ''),
-    (6,'Devonte','Smith', 'dsmith@nfl.com', 0, 0, 0, ''),
-	(7,'Dallas','Goedert', 'dgoedert@nfl.com', 0, 0, 0, ''),
-	(8,'Tyler','Bass', 'tbass@nfl.com', 0, 0, 0, ''),
-	(9,'Mike','Evans', 'mevans@nfl.com', 0, 0, 0, '');
+	(1,'Joe','Burrow', 'jburrow@nfl.com', 0, 16, 0, '15 22 23 24 25 26'),
+	(2,'Jamarr','Chase', 'jchase@nfl.com', 0, 16, 0, '27 28 29 30 31'),
+    (3,'Tyler','Bass', 'tbass@nfl.com', 0, 16, 0, '29 30 31'),
+	(4,'Josh','Jacobs', 'jjacobs@nfl.com', 0, 7, 0, '1 2 3 4 5 6 7 8 9 10 11 18'),
+	(5,'Mike','Evans', 'mevans@nfl.com', 0, 17, 0, '11 18 22 23 24 25 26 27'),
+	(6,'Damien','Pierce', 'dpierce@nfl.com', 0, 18, 0, '1 2 3 21 22 23 24 25 26'),
+    (7,'Devonte','Smith', 'dsmith@nfl.com', 0, 18, 0, '28 29 30 31'),
+	(8,'Dallas','Goedert', 'dgoedert@nfl.com', 0, 13, 0, '27 28 29 30 31'),
+	(9,'Justin','Jefferson', 'jjefferson@nfl.com', 0, 3, 0, '1');
+	
 
     

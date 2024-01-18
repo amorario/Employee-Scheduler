@@ -83,14 +83,14 @@ public class ShiftController {
 
 		System.out.println("Inside method for showAssignmentForm");
 
+		shiftService.defaultShiftsAmount(shiftService.findAllEmployees());
+
 		// get the employee list from the service
 		EmployeeListWrapper wrapper = new EmployeeListWrapper();
 		wrapper.setEmployeeList(shiftService.findAllEmployees());
 
 		// set shift as a model attribute to pre-populate the form
 		theModel.addAttribute("wrapper", wrapper);
-
-		System.out.println("the month redirecting to " + theMonth);
 
 		theModel.addAttribute("month", theMonth);
 
@@ -228,6 +228,8 @@ public class ShiftController {
 		System.out.println("In viewMonth() and the month chosen is " + m+ " and the year is " + year);
 
 		List<Shift> monthlyShifts = shiftService.getMonthlyShifts(m.getValue(), year);
+		shiftService.printMonthShifts(monthlyShifts, shiftService.findAllEmployees());
+
 		theModel.addAttribute("shifts", monthlyShifts);
 		theModel.addAttribute("month", theMonth);
 		return "employees/shifts/list-monthly-shifts";

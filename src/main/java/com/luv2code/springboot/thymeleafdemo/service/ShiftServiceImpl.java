@@ -198,14 +198,11 @@ public class ShiftServiceImpl implements ShiftService {
 			employeeListOriginal.get(i).setDaysOff(groupDaysOff.get(i));
 		}*/
 
-
 		List<Employee> employeeList = new ArrayList<>(employeeListOriginal);
 		Collections.shuffle(employeeList);
 		List<List<Employee>> groupList = new ArrayList<List<Employee>>();
 
-
 		groupList = eGroupings(employeeList, shiftList);
-
 
 		shiftList.get(0).getDate().getMonthValue();
 		int weekends = getNumberOfWeekendsInMonth(shiftList);
@@ -314,8 +311,6 @@ public class ShiftServiceImpl implements ShiftService {
 			}
 		}			// Assign pairs whose shift amounts add up to the month's length
 
-
-
 		//while (!checkIfAllSet(employeeList)) {
 		for (int k = 0 ; k < 4 ; k++){                  // k = number of guys to assign
 			sortScheduleDifficulty(employeeList, (shiftList.size()/4));
@@ -397,9 +392,9 @@ public class ShiftServiceImpl implements ShiftService {
 
 		}
 		//System.out.println("employeeList: " + employeeListOriginal + "\n");
-		for (int i = 0; i < 4 ; i++) {
-			printIntShiftList(getStretches(shiftList, getIntShiftsList(shiftList, i)), employeeListOriginal);
-		}
+		//for (int i = 0; i < 4 ; i++)
+			//printIntShiftList(getStretches(shiftList, getIntShiftsList(shiftList, i)), employeeListOriginal);
+
 	}
 
 	@Override
@@ -432,6 +427,24 @@ public class ShiftServiceImpl implements ShiftService {
 
 		for (Employee e : employeeRepository.findAll())
 			System.out.println(e);
+	}
+
+	@Override
+	public void defaultShiftsAmount(List<Employee> employeeList) {
+		for (Employee e : employeeList) {        // ordered by id, starting at 1
+			if (e.getId() < 4)
+				e.setShiftsAmount(16);
+			else if (e.getId() == 4)
+				e.setShiftsAmount(7);
+			else if (e.getId() == 5)
+				e.setShiftsAmount(17);
+			else if (e.getId() == 6 || e.getId() == 7)
+				e.setShiftsAmount(18);
+			else if (e.getId() == 8)
+				e.setShiftsAmount(13);
+			else
+				e.setShiftsAmount(3);
+		}
 	}
 
 
@@ -631,12 +644,14 @@ public class ShiftServiceImpl implements ShiftService {
 						length = 8-stretches.get(i-1).get(0);
 					if (length > temp.getShiftsAmount())
 						length = temp.getShiftsAmount();
-					//System.out.println("tempShiftAmount = " + e2.getShiftsAmount()+ ", Length = " + length);
-					//System.out.println("temp = " + temp.getFirstName()+ ", Length = " + length);
+					System.out.println("tempShiftAmount = " + temp.getShiftsAmount()+ ", Length = " + length);
+					System.out.println("temp = " + temp.getLastName() + ", index = " + index);
 					for (int j = 0 ; j < length; j++) {
-						assign(temp, shiftList.get(intShiftsList.get(index + j)), shiftList);
-						if (isWeekend(shiftList.get(intShiftsList.get(index + j))))
-							j++;
+						if ((index + j) < intShiftsList.size()) {
+							assign(temp, shiftList.get(intShiftsList.get(index + j)), shiftList);
+							if (isWeekend(shiftList.get(intShiftsList.get(index + j))))
+								j++;
+						}
 					}
 					stretchLength -= length;
 					index += length;
@@ -646,8 +661,11 @@ public class ShiftServiceImpl implements ShiftService {
 			index += stretchLength;
 		}
 		stretches = getStretches(shiftList, intShiftsList);
+
+		e1.setShiftsAmount(e1.getShiftsAmount(shiftList));
+		e2.setShiftsAmount(e2.getShiftsAmount(shiftList));
 		//System.out.println("getStretches: " + stretches);
-		//System.out.println(e1.getFirstName() +" shifts amount = " + e1.getShiftsAmount()+ ", " +e2.getFirstName() +" shifts amount = " + e2.getShiftsAmount());
+		System.out.println(e1.getFirstName() +" shifts amount = " + e1.getShiftsAmount()+ ", " +e2.getFirstName() +" shifts amount = " + e2.getShiftsAmount());
 		//System.out.println("e1 weekends = " + (e1.getWeekends() / 2) + ", e2 weekends = " + (e2.getWeekends() /2));
 
 	}
@@ -1088,7 +1106,7 @@ public class ShiftServiceImpl implements ShiftService {
 	public int getPriorMonthsShifts(Employee e, LocalDate firstOfMonth) {
 		// send user id and date to service method and return number of shifts worked in last 8 days prior to start of next month
 		List<Shift> lastMonthsList = findAllByMonth(firstOfMonth.minusMonths(1L).getMonth());
-		if (lastMonthsList == null)
+		if (lastMonthsList == null || lastMonthsList.size() == 0)
 			return 0;
 
 		int daysOn = 0, shiftsOff = 0;
@@ -1104,14 +1122,17 @@ public class ShiftServiceImpl implements ShiftService {
 				break;
 			}
 		}
-		//int shiftsToCheck = lastMonthsList.size() - idFound;
-		//System.out.println("Shift found: " + shiftFound + "; amount to check = " + shiftsToCheck + ", ID to check " + id);
-		if (shiftFound == null)
+		if (shiftFound == null || shiftFound.getEmployee() == null)
 			return 0;
+		int shiftsToCheck = lastMonthsList.size() - idFound;
+		System.out.println("Shift found: " + shiftFound + "; employee = " + shiftFound.getEmployee() + ", ID to check " + e.getId());
+
 		int dayOfMonth =0;
 		for (int i = 0 ; i < 32 ; i++) {                // cycle through the next 8 days worth of shifts
+			if (shiftFound.getEmployee() == null) {
 
-			if (shiftFound.getEmployee().equals(e)) {
+			}
+			if (shiftFound.getEmployee().getId() == e.getId()) {
 				//System.out.println("Shift found for " + e.getLastName() + " - " +  shiftFound + " = " + shiftFound.getEmployee().getLastName());
 				daysOn++;
 				//if (!(shiftFound.getCall().equals("LATE")))
@@ -1134,6 +1155,12 @@ public class ShiftServiceImpl implements ShiftService {
 			System.out.println("Stretch for " +e.getLastName()+ " from previous month = " + daysOn);
 
 		return daysOn;
+	}
+
+	@Override
+	public void printMonthShifts(List<Shift> shiftList, List<Employee> employeeList) {
+		for (int i = 0; i < 4; i++)
+			printIntShiftList(getStretches(shiftList, getIntShiftsList(shiftList, i)), employeeList);
 	}
 
 }

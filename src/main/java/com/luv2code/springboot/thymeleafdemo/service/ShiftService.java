@@ -35,4 +35,8 @@ public interface ShiftService {
 	boolean isUnassigned(List<Shift> monthlyShifts);
 
 	void updateEmployeeList(List<Employee> wrapperList);
+
+	void defaultShiftsAmount(List<Employee> allEmployees);
+
+	void printMonthShifts(List<Shift> shiftList, List<Employee> employeeList);
 }
