@@ -760,15 +760,20 @@ public class ShiftServiceImpl implements ShiftService {
 	static void printIntShiftList(List<List<Integer>> stretches, List<Employee> employeeList) {
 		System.out.print("Stretches: ");
 		int total = 0;
-		for (List<Integer> stretch : stretches) {
-			if (stretch.get(1) != 0) {
-				total += stretch.get(0);
-				System.out.print("[" + stretch.get(0) + " days, " + employeeList.get(stretch.get(1) -1).getFirstName() + "] ");
-			} else {
-				System.out.print("*" + stretch.get(0) + " days unassigned* ");
-			}
-		}
-		System.out.println("- Assigned shifts = " + total);
+        	int start = 1;
+        	int end = 0;
+        	for (List<Integer> stretch : stretches) {
+            		end += stretch.get(0);
+            		if (stretch.get(1) != 0) {
+                		total += stretch.get(0);
+                		System.out.print("[" + start + "-" + end + " (" +  stretch.get(0) + " days), " + employeeList.get(stretch.get(1) -1).getFirstName() + "] ");
+            		}
+            		else {
+                		System.out.print("*" + stretch.get(0) + " days unassigned* ");
+            		}
+            		start = end + 1;
+        	}
+        	System.out.println("- Assigned shifts = " + total);
 	}
 
 	static boolean dayOpen(Employee e, int day) {
@@ -958,17 +963,11 @@ public class ShiftServiceImpl implements ShiftService {
 			}
 			//System.out.println("start = " + start + ", open days = " + open + ", temp (low) = " + temp);
 
-
-			// ************************************************VITAL FACTOR***************************************************************
-
-
 			if (((open <= temp) && (open > (e.getShiftsAmount() -5))) || ((e.getShiftsAmount() < 8) && (open >= e.getShiftsAmount()))) {
 				start = i;
 				temp = open;
 				//System.out.println("start = " + start + ", open days = " + open + ", temp (low) = " + temp);
 			}
-
-			// ************************************************VITAL FACTOR***************************************************************
 
 		}
 
